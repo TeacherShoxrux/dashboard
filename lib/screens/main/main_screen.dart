@@ -1,5 +1,6 @@
 import 'package:admin/controllers/menu_app_controller.dart';
 import 'package:admin/responsive.dart';
+import 'package:admin/screens/cart/cart_page.dart';
 import 'package:admin/screens/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../booking_list/booking_list_page.dart';
 import '../customers/customers_screen.dart';
 import '../product_selection/product_selection_page.dart';
+import '../profile/profile_page.dart';
 import '../rented_list/rented_list_page.dart';
 import 'components/side_menu.dart';
 
@@ -18,6 +20,8 @@ class MainScreen extends StatelessWidget {
     ProductSelectionScreen(),
     RentedListPage(),
     BookingListPage(),
+    CartPage(),
+    ProfilePage(),
   ];
 
   @override
