@@ -18,42 +18,42 @@ class SideMenu extends StatelessWidget {
             child: Image.asset("assets/images/logo.png"),
           ),
           DrawerListTile(
-            title: "Dashboard",
+            title: "Dashboard sahifasi",
             svgSrc: "assets/icons/menu_dashboard.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(0);
             },
           ),
           DrawerListTile(
-            title: "Customer",
+            title: "Mijozlar",
             svgSrc: "assets/icons/menu_tran.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(1);
             },
           ),
           DrawerListTile(
-            title: "Products",
+            title: "Texnikalar",
             svgSrc: "assets/icons/menu_task.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(2);
             },
           ),
           DrawerListTile(
-            title: "Rented list",
+            title: "Ijaraga berilganlar",
             svgSrc: "assets/icons/menu_doc.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(3);
             },
           ),
           DrawerListTile(
-            title: "Booking list",
+            title: "Band qilinganlar",
             svgSrc: "assets/icons/menu_store.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(4);
             },
           ),
           DrawerListTile(
-            title: "Cart",
+            title: "Savatcha",
             svgSrc: "assets/icons/menu_notification.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(5);
@@ -66,18 +66,19 @@ class SideMenu extends StatelessWidget {
               context.read<MenuAppController>().setMenuIndex(8);
             },
           ),
+
           DrawerListTile(
-            title: "Settings",
-            svgSrc: "assets/icons/menu_setting.svg",
-            press: () {
-              context.read<MenuAppController>().setMenuIndex(7);
-            },
-          ),
-          DrawerListTile(
-            title: "Profile",
+            title: "Akkaunt",
             svgSrc: "assets/icons/menu_profile.svg",
             press: () {
               context.read<MenuAppController>().setMenuIndex(6);
+            },
+          ),
+          DrawerListTile(
+            title: "Sozlanmalar",
+            svgSrc: "assets/icons/menu_setting.svg",
+            press: () {
+              context.read<MenuAppController>().setMenuIndex(7);
             },
           ),
 
