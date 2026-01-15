@@ -3,6 +3,7 @@ import 'package:admin/screens/product_selection/components/product_card.dart';
 import 'package:flutter/material.dart';
 
 import 'components/add_brand_dialog.dart';
+import 'components/add_product_alert.dart';
 
 class ProductSelectionScreen extends StatefulWidget {
   @override
@@ -62,8 +63,10 @@ class _VisualSelectionScreenState extends State<ProductSelectionScreen> {
                   // 2. MAHSULOT QO'SHISH TUGMASI
                   ElevatedButton.icon(
                     onPressed: () {
-                      print("Yangi mahsulot qo'shish oynasi");
-                      // Bu yerda mahsulot qo'shish funksiyasini chaqirasiz
+                      showDialog(
+                        context: context,
+                        builder: (context) => const AddProductDialog(),
+                      );
                     },
                     icon: const Icon(Icons.add_box),
                     label: const Text("Mahsulot qo'shish"),

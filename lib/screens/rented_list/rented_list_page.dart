@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../product_selection/components/add_product_alert.dart';
+import 'components/return_product_dialog.dart';
+
 class RentedListPage extends StatefulWidget {
   @override
   _RentedListPageState createState() => _RentedListPageState();
@@ -138,8 +141,19 @@ class _RentedListPageState extends State<RentedListPage> {
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.assignment_return, color: Colors.orange),
-              onPressed: () {}, // Qaytarib olish funksiyasi
+              icon: const Icon(Icons.assignment_return, color: Colors.green),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => ReturnProductDialog(
+                    customerName: "Ali Valiyev",
+                    rentedItems: [
+                      {"name": "Sony A7III", "qty": 2},
+                      {"name": "24-70mm Lens", "qty": 1},
+                    ],
+                  ),
+                );
+              }, // Qaytarib olish funksiyasi
               tooltip: "Qaytarib olish",
             ),
             IconButton(
