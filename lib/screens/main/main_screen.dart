@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../customers/customers_screen.dart';
 import '../product_selection/product_selection_page.dart';
+import '../rented_list/rented_list_page.dart';
 import 'components/side_menu.dart';
 
 class MainScreen extends StatelessWidget {
@@ -13,7 +14,8 @@ class MainScreen extends StatelessWidget {
   final List<Widget> _pages = [
     DashboardScreen(),
     CustomersScreen(), // ProductsScreen()
-    ProductSelectionScreen()
+    ProductSelectionScreen(),
+    RentedListPage(),
   ];
 
   @override

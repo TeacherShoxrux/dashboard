@@ -39,9 +39,11 @@ class SideMenu extends StatelessWidget {
             },
           ),
           DrawerListTile(
-            title: "Documents",
+            title: "Rented list",
             svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
+            press: () {
+              context.read<MenuAppController>().setMenuIndex(3);
+            },
           ),
           DrawerListTile(
             title: "Store",
