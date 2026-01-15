@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'components/customer_add_alert.dart';
+
 class CustomersScreen extends StatefulWidget {
   @override
   _CustomersScreenState createState() => _CustomersScreenState();
@@ -26,7 +28,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () => setState(() => isAddingNew = !isAddingNew),
+                  onPressed: (){
+                    showDialog(
+                      context: context,
+                      builder: (context) => const AddCustomerDialog(),
+                    );
+                  },
+                  // onPressed: () => setState(() => isAddingNew = !isAddingNew),
                   icon: Icon(isAddingNew ? Icons.list : Icons.add),
                   label: Text(isAddingNew ? "Ro'yxatga qaytish" : "Yangi mijoz"),
                   style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15)),

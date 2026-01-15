@@ -155,8 +155,6 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-
-  // Oxirgi harakatlar jadvali
   Widget _buildRecentActivitiesTable() {
     return Container(
       padding: const EdgeInsets.all(24),
