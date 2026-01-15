@@ -17,7 +17,7 @@ import 'components/side_menu.dart';
 class MainScreen extends StatelessWidget {
   // Sahifalar ro'yxati
   final List<Widget> _pages = [
-    DashboardScreen(),
+    DashboardPage(),
     CustomersScreen(), // ProductsScreen()
     ProductSelectionScreen(),
     RentedListPage(),
