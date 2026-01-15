@@ -1,5 +1,8 @@
-import 'package:admin/screens/product_selection/product_card.dart';
+import 'package:admin/screens/product_selection/components/add_category_alert.dart';
+import 'package:admin/screens/product_selection/components/product_card.dart';
 import 'package:flutter/material.dart';
+
+import 'components/add_brand_dialog.dart';
 
 class ProductSelectionScreen extends StatefulWidget {
   @override
@@ -92,8 +95,10 @@ class _VisualSelectionScreenState extends State<ProductSelectionScreen> {
                       Text("Brendlar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       IconButton(
                         onPressed: () {
-                          print("Yangi kategoriya qo'shish bosildi");
-                          // Bu yerda dialog yoki yangi sahifani ochishingiz mumkin
+                          showDialog(
+                            context: context,
+                            builder: (context) => const AddBrandDialog(),
+                          );
                         },
                         icon: const Icon(Icons.add_circle, color: Colors.green, size: 28),
                         tooltip: "Brend qo'shish",
@@ -174,8 +179,10 @@ class _VisualSelectionScreenState extends State<ProductSelectionScreen> {
                         // Matn yonidagi + tugmasi
                         IconButton(
                           onPressed: () {
-                            print("Yangi kategoriya qo'shish bosildi");
-                            // Bu yerda dialog yoki yangi sahifani ochishingiz mumkin
+                            showDialog(
+                              context: context,
+                              builder: (context) => const AddCategoryDialog(),
+                            );
                           },
                           icon: const Icon(Icons.add_circle, color: Colors.green, size: 28),
                           tooltip: "Kategoriya qo'shish",
