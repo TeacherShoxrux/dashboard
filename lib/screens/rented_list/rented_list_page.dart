@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../booking_list/component/order_details_alert.dart';
 import '../product_selection/components/add_product_alert.dart';
 import 'components/return_product_dialog.dart';
 
@@ -108,12 +109,45 @@ class _RentedListPageState extends State<RentedListPage> {
       ),
       // Mahsulot ma'lumotlari
       DataCell(
-        Row(
-          children: [
-            const Icon(Icons.laptop, size: 20, color: Colors.blue),
-            const SizedBox(width: 8),
-            const Text("MacBook Pro M3"),
-          ],
+        TextButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => OrderDetailsDialog(
+                orderData: {
+                  "id": "1045",
+                  "status": "Ijarada",
+                  "customer_name": "Ali Valiyev",
+                  "customer_phone": "+998 90 123 45 67",
+                  "start_date": "12.01.2026",
+                  "end_date": "20.01.2026",
+                  "total_amount": 2500000.0,
+                  "paid_amount": 1000000.0,
+                  "products": [
+                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
+                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
+                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
+                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
+                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
+                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
+                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
+                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
+                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
+                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
+                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
+                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
+                  ]
+                },
+              ),
+            );
+          },
+          child: Row(
+            children: [
+              const Icon(Icons.laptop, size: 20, color: Colors.blue),
+              const SizedBox(width: 8),
+              const Text("MacBook Pro M3"),
+            ],
+          ),
         ),
       ),
       DataCell(const Text("12.01.2024")),
