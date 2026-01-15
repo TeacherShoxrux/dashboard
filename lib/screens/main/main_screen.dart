@@ -11,6 +11,7 @@ import '../employee/employee_page.dart';
 import '../product_selection/product_selection_page.dart';
 import '../profile/profile_page.dart';
 import '../rented_list/rented_list_page.dart';
+import '../reports/reports_page.dart';
 import 'components/side_menu.dart';
 
 class MainScreen extends StatelessWidget {
@@ -23,7 +24,8 @@ class MainScreen extends StatelessWidget {
     BookingListPage(),
     CartPage(),
     ProfilePage(),
-    EmployeesPage()
+    EmployeesPage(),
+    ReportsPage(),
   ];
 
   @override

@@ -63,7 +63,7 @@ class SideMenu extends StatelessWidget {
             title: "Hisobot",
             svgSrc: "assets/icons/menu_notification.svg",
             press: () {
-              context.read<MenuAppController>().setMenuIndex(5);
+              context.read<MenuAppController>().setMenuIndex(8);
             },
           ),
           DrawerListTile(
