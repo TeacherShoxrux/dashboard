@@ -59,6 +59,15 @@ class SideMenu extends StatelessWidget {
               context.read<MenuAppController>().setMenuIndex(5);
             },
           ),
+
+          DrawerListTile(
+            title: "Xodimlar",
+            svgSrc: "assets/icons/menu_setting.svg",
+            press: () {
+              context.read<MenuAppController>().setMenuIndex(7);
+            },
+          ),
+
           DrawerListTile(
             title: "Hisobot",
             svgSrc: "assets/icons/menu_notification.svg",
@@ -74,13 +83,7 @@ class SideMenu extends StatelessWidget {
               context.read<MenuAppController>().setMenuIndex(6);
             },
           ),
-          DrawerListTile(
-            title: "Sozlanmalar",
-            svgSrc: "assets/icons/menu_setting.svg",
-            press: () {
-              context.read<MenuAppController>().setMenuIndex(7);
-            },
-          ),
+
 
         ],
       ),
