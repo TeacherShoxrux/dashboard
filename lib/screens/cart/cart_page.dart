@@ -219,7 +219,6 @@ class _CartPageState extends State<CartPage> {
 
                 Text("To'lov turi va summa:", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
-
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
