@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../booking_list/booking_list_page.dart';
 import '../customers/customers_screen.dart';
+import '../employee/employee_page.dart';
 import '../product_selection/product_selection_page.dart';
 import '../profile/profile_page.dart';
 import '../rented_list/rented_list_page.dart';
@@ -22,6 +23,7 @@ class MainScreen extends StatelessWidget {
     BookingListPage(),
     CartPage(),
     ProfilePage(),
+    EmployeesPage()
   ];
 
   @override
