@@ -23,7 +23,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
     "Canon": ["Fotoapparat", "Printer"],
     "DJI": ["Dron", "Stabilizator"],
   };
-
+  bool isMainProduct = true; // State ichida
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -75,25 +75,56 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 ),
                 const SizedBox(height: 15),
 
+
+// Mahsulot qo'shish formasi ichida:
+          Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Mahsulot turi", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  // Asosiy mahsulot tanlovi
+                  ChoiceChip(
+                    label: const Text("Asosiy mahsulot"),
+                    selected: isMainProduct,
+                    selectedColor: Colors.blue.withOpacity(0.2),
+                    labelStyle: TextStyle(color: isMainProduct ? Colors.blue : Colors.black),
+                    onSelected: (selected) {
+                      if (selected) setState(() => isMainProduct = true);
+                    },
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Qo'shimcha mahsulot tanlovi
+                  ChoiceChip(
+                    label: const Text("Qo'shimcha"),
+                    selected: !isMainProduct,
+                    selectedColor: Colors.orange.withOpacity(0.2),
+                    labelStyle: TextStyle(color: !isMainProduct ? Colors.orange : Colors.black),
+                    onSelected: (selected) {
+                      if (selected) setState(() => isMainProduct = false);
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // Boshqa barcha fieldlar bir xil davom etaveradi
+              _buildField("Mahsulot nomi", Icons.inventory),
+              // ...
+            ],
+          ),
                 // 4. NARXI VA SONI (STOCK)
-                Row(
-                  children: [
-                    Expanded(child: _buildField("Ijara narxi (kunlik)", Icons.payments, isNumber: true, suffix: "so'm")),
-                    const SizedBox(width: 15),
-                    Expanded(child: _buildField("Jami soni (Inventar)", Icons.format_list_numbered, isNumber: true)),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: _buildDropdown("Holati", ["Yangi", "Yaxshi", "O'rtacha"], (val) => condition = val!),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 15),
 
                 // 5. MAHSULOT HAQIDA (DESCRIPTION)
                 _buildField("Mahsulot haqida batafsil", Icons.description, maxLines: 3),
 
                 const SizedBox(height: 15),
-                // 6. QO'SHIMCHA (KO'ZDAN QOCHGANLAR)
+
                 const Text("Qo'shimcha parametrlar", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 const SizedBox(height: 8),
                 Row(

@@ -186,13 +186,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   ],
                 ),
 
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //
-                //   ],
-                // ),
-// Dinamik qo'shiladigan raqamlar
+
+                // Dinamik qo'shiladigan raqamlar
                 if (extraPhones.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   ListView.builder(
