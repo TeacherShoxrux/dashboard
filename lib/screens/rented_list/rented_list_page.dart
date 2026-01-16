@@ -152,6 +152,7 @@ class _RentedListPageState extends State<RentedListPage> {
       ),
       DataCell(const Text("12.01.2024")),
       DataCell(TextButton(
+          autofocus: false,
           onPressed: () => _showEditReturnDateDialog(context, {"name": "MacBook Pro M3"}),
           child: const Text("20.01.2024"))),
       // Holati (Badge)

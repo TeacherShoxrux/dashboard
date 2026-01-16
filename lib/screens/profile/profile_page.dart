@@ -1,3 +1,4 @@
+import 'package:admin/screens/profile/components/site_branding.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -8,7 +9,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool isEditing = false; // Tahrirlash rejimini boshqarish
+  bool isEditingProfile = false; // Tahrirlash rejimini boshqarish
+  bool isEditingSite = false; // Tahrirlash rejimini boshqarish
 
   // Foydalanuvchi ma'lumotlari uchun kontrollerlar
   final TextEditingController nameController = TextEditingController(text: "Ali Valiyev");
@@ -25,8 +27,8 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           // Tahrirlashni yoqish/o'chirish tugmasi
           IconButton(
-            icon: Icon(isEditing ? Icons.close : Icons.edit),
-            onPressed: () => setState(() => isEditing = !isEditing),
+            icon: Icon(isEditingSite ? Icons.close : Icons.edit),
+            onPressed: () => setState(() => isEditingSite = !isEditingSite),
           )
         ],
       ),
@@ -41,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15)],
             ),
-            child: Column(
+            child:isEditingSite?SiteBrandingWidget(): Column(
               children: [
                 // 1. PROFIL RASMI
                 _buildProfileAvatar(),
@@ -57,13 +59,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 40),
 
                 // 3. SAQLASH TUGMASI (Faqat tahrirlashda chiqadi)
-                if (isEditing)
+                if (isEditingProfile)
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        setState(() => isEditing = false);
+                        setState(() => isEditingProfile = false);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Ma'lumotlar saqlandi!")),
                         );
@@ -72,6 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
                     ),
                   ),
+
               ],
             ),
           ),
@@ -89,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.blue[50],
           child: const Icon(Icons.person, size: 70, color: Colors.blue),
         ),
-        if (isEditing)
+        if (isEditingProfile)
           Positioned(
             bottom: 0,
             right: 0,
@@ -118,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Icon(icon, color: Colors.blue, size: 20),
             const SizedBox(width: 15),
             Expanded(
-              child: isEditing
+              child: isEditingProfile
                   ? TextField(
                 controller: controller,
                 decoration: const InputDecoration(isDense: true, border: UnderlineInputBorder()),
@@ -128,10 +131,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
-            if (!isEditing)
+            if (!isEditingProfile)
               IconButton(
                 icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                onPressed: () => setState(() => isEditing = true),
+                onPressed: () => setState(() => isEditingProfile = true),
               ),
           ],
         ),
