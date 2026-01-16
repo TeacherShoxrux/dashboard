@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'components/customer_add_alert.dart';
+import 'components/customer_search_widget.dart';
 
 class CustomersScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
     return Scaffold(
       // backgroundColor: Color(0xFFF8F9FA),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.only(left: 24.0,right: 24.0,top: 10, bottom: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -41,7 +42,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
+            CustomerSearchWidget(),
+            SizedBox(height: 10),
 
             // Dinamik kontent: Yoki Jadval yoki Forma
             Expanded(
@@ -123,7 +126,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             DataColumn(label: Text('Holati')),
             DataColumn(label: Text('Amallar')),
           ],
-          rows: List.generate(5, (index) => DataRow(cells: [
+          rows: List.generate(25, (index) => DataRow(cells: [
             DataCell(Text("${17 - index}")),
             DataCell(Text("Rustam Axmerov")),
             DataCell(Text("AD32131231")),

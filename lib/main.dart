@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
             .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      // Endi bu yerda Provider kerak emas, u allaqachon MyApp ni o'rab turibdi
       home: LoginPage(),
     );
   }
