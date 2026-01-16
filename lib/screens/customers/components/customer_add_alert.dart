@@ -15,6 +15,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   bool hasPassport = true;
   DateTime? birthDate;
 
+  var passportType="Oddiy";
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -75,6 +77,55 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   children: [
                     Expanded(child: _buildField("JSHSHIR", Icons.numbers, isNumber: true)),
                     const SizedBox(width: 15),
+                    Expanded(child: _buildField("Passport Seriya va Raqam", Icons.badge)),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Passport turi", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          DropdownButtonFormField<String>(
+                            value: passportType,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.assessment_outlined),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            items: ["Oddiy", "Zagran"].map((type) {
+                              return DropdownMenuItem(value: type, child: Text(type));
+                            }).toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                passportType = val!;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    // Agar Zagran bo'lsa, qo'shimcha field chiqadi, aks holda JSHSHIR turadi
+                    Expanded(
+                      child: passportType == "Zagran"
+                          ? _buildField("Passport haqida (Qo'shimcha)", Icons.info_outline)
+                          : _buildField("JSHSHIR", Icons.numbers, isNumber: true),
+                    ),
+                  ],
+                ),
+
+                // 4. PASSPORT SERIYA VA RAQAM (Alohida qatorda yoki yonida)
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    // Agar tepada JSHSHIRni zagranga almashtirgan bo'lsak, bu yerda JSHSHIRni ko'rsatish mumkin
+                    if (passportType == "Zagran")
+                      Expanded(child: _buildField("JSHSHIR", Icons.numbers, isNumber: true)),
+                    if (passportType == "Zagran") const SizedBox(width: 15),
+
                     Expanded(child: _buildField("Passport Seriya va Raqam", Icons.badge)),
                   ],
                 ),

@@ -9,7 +9,7 @@ class CustomersScreen extends StatefulWidget {
 }
 
 class _CustomersScreenState extends State<CustomersScreen> {
-  bool isAddingNew = false; // Ro'yxat yoki Forma ko'rinishini almashtirish
+  // bool isAddingNew = false; // Ro'yxat yoki Forma ko'rinishini almashtirish
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isAddingNew ? "Yangi mijoz qo'shish" : "Mijozlar ro'yxati",
+                 "Yangi mijoz qo'shish",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 ElevatedButton.icon(
@@ -36,8 +36,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     );
                   },
                   // onPressed: () => setState(() => isAddingNew = !isAddingNew),
-                  icon: Icon(isAddingNew ? Icons.list : Icons.add),
-                  label: Text(isAddingNew ? "Ro'yxatga qaytish" : "Yangi mijoz"),
+                  icon: Icon(Icons.add),
+                  label: Text("Yangi mijoz"),
                   style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15)),
                 ),
               ],
@@ -54,7 +54,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
                 ),
-                child: isAddingNew ? _buildAddCustomerForm() : _buildCustomerTable(),
+                child: _buildCustomerTable(),
               ),
             ),
           ],
@@ -63,82 +63,97 @@ class _CustomersScreenState extends State<CustomersScreen> {
     );
   }
 
-  // 1-Rasm: Mijoz qo'shish formasi
-  Widget _buildAddCustomerForm() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(child: _buildTextField("Passport seriyasi", "Seriyani kiriting")),
-              SizedBox(width: 20),
-              Expanded(child: _buildTextField("Passport raqami", "Raqamni kiriting")),
-            ],
-          ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(child: _buildTextField("Yashash manzili", "Manzilni kiriting")),
-              SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Passport bormi?", style: TextStyle(fontWeight: FontWeight.bold)),
-                    Row(
-                      children: [
-                        Radio(value: true, groupValue: true, onChanged: (v) {}), Text("Bor"),
-                        Radio(value: false, groupValue: true, onChanged: (v) {}), Text("Yo'q"),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          _buildTextField("Izoh", "Qo'shimcha ma'lumot...", maxLines: 3),
-          SizedBox(height: 30),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text("Saqlash"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, minimumSize: Size(150, 50)),
-            ),
-          )
-        ],
-      ),
-    );
-  }
 
   // 2-Rasm: Mijozlar jadvali
   Widget _buildCustomerTable() {
     return ListView(
       children: [
         DataTable(
-          // headingRowColor: WidgetStateProperty.all(Colors.grey[100]),
+          columnSpacing: 20,
+          headingRowColor: WidgetStateProperty.all(Colors.grey.withOpacity(0.3)),
           columns: const [
-            DataColumn(label: Text('ID')),
-            DataColumn(label: Text('Ismi Familiyasi')),
-            DataColumn(label: Text('Passport')),
-            DataColumn(label: Text('Holati')),
-            DataColumn(label: Text('Amallar')),
+            DataColumn(label: Text('ID', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Ismi Familiyasi', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Passport', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Holati', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Passport Joylashuvi', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Amallar', style: TextStyle(fontWeight: FontWeight.bold))),
           ],
-          rows: List.generate(25, (index) => DataRow(cells: [
-            DataCell(Text("${17 - index}")),
-            DataCell(Text("Rustam Axmerov")),
-            DataCell(Text("AD32131231")),
-            DataCell(Row(children: [Icon(Icons.check_circle, color: Colors.green, size: 16), Text(" Aktiv")])),
-            DataCell(Row(
-              children: [
-                IconButton(icon: Icon(Icons.edit, color: Colors.blue), onPressed: () {}),
-                IconButton(icon: Icon(Icons.delete, color: Colors.red), onPressed: () {}),
-              ],
-            )),
-          ])),
-        ),
+          rows: List.generate(10, (index) {
+            // Har bir qator uchun alohida state bo'lishi kerak (aslida buni modeldan olasiz)
+            bool isAtOffice = index % 2 == 0;
+
+            return DataRow(cells: [
+              DataCell(Text("${107 - index}")),
+              DataCell(Text("Rustam Axmerov")),
+              DataCell(Text("AD32131231")),
+              DataCell(
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green, size: 14),
+                      SizedBox(width: 4),
+                      Text("Aktiv", style: TextStyle(color: Colors.green, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ),
+              DataCell(
+                Row(
+                  children: [
+                    // Holatni bildiruvchi matn
+                    Text(
+                      isAtOffice ? "Ofisda" : "O'zida",
+                      style: TextStyle(
+                        color: isAtOffice ? Colors.blue : Colors.orange,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Switch orqali o'zgartirish
+                    Transform.scale(
+                      scale: 0.8, // Switch biroz kichikroq bo'lishi uchun
+                      child: Switch(
+                        value: isAtOffice,
+                        activeColor: Colors.blue,
+                        activeTrackColor: Colors.blue.withOpacity(0.3),
+                        inactiveThumbColor: Colors.orange,
+                        inactiveTrackColor: Colors.orange.withOpacity(0.3),
+                        onChanged: (bool value) {
+                          setState(() {
+                            isAtOffice = value;
+                          });
+                          print("Passport holati o'zgardi: $value");
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              DataCell(Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                    onPressed: () {},
+                    tooltip: "Tahrirlash",
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    onPressed: () {},
+                    tooltip: "O'chirish",
+                  ),
+                ],
+              )),
+            ]);
+          }),
+        )
       ],
     );
   }
