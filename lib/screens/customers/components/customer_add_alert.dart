@@ -6,10 +6,27 @@ class AddCustomerDialog extends StatefulWidget {
   @override
   _AddCustomerDialogState createState() => _AddCustomerDialogState();
 }
+class PhoneContact {
+  String label; // Akasi, do'sti va h.k.
+  TextEditingController controller;
 
+  PhoneContact({required this.label, required this.controller});
+}
 class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
 
+
+// State ichida:
+  List<PhoneContact> extraPhones = [];
+
+  void _addPhoneField() {
+  setState(() {
+  extraPhones.add(PhoneContact(
+  label: "", // Foydalanuvchi o'zi yozadi
+  controller: TextEditingController(),
+  ));
+  });
+  }
   // Ma'lumotlar holati
   String gender = "Erkak";
   bool hasPassport = true;
@@ -34,6 +51,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. ASOSIY MA'LUMOTLAR
                 Row(
@@ -138,29 +156,97 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       child: _buildDatePicker("Tug'ilgan kun"),
                     ),
                     const SizedBox(width: 15),
-                    Expanded(child: _buildField("Invite ID", Icons.card_giftcard)),
+                    Expanded(child: _buildField("Taklif qilgan odam", Icons.card_giftcard)),
                   ],
                 ),
-
-                // 5. TELEFON RAQAMLARI (SHAXSIY, ISH, UY)
-                const SizedBox(height: 20),
-                const Align(alignment: Alignment.centerLeft, child: Text("Telefon raqamlari", style: TextStyle(fontWeight: FontWeight.bold))),
+                const SizedBox(height: 10),
+                const Text("Telefon raqamlari", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Expanded(child: _buildField("Shaxsiy", Icons.phone, hint: "+998")),
+                    SizedBox(
+                      width: 120,
+                      child: TextFormField(
+                        enabled: false,
+                        decoration: InputDecoration(
+                          labelText: "O'zini",
+                          hintText: "O'zini",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onChanged: (String val) {},
+                      ),
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(child: _buildField("Ish", Icons.business_center, hint: "+998")),
-                    const SizedBox(width: 10),
-                    Expanded(child: _buildField("Uy", Icons.home, hint: "+998")),
+                    Expanded(child: _buildField("O'zining telefon raqami", Icons.phone, hint: "+998")),
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                      onPressed: () {},
+                    ),
+
                   ],
                 ),
 
-                // 6. DETAILS (IZOH)
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //
+                //   ],
+                // ),
+// Dinamik qo'shiladigan raqamlar
+                if (extraPhones.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true, // Scroll ichida ishlashi uchun
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: extraPhones.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            // Kimga tegishliligi (Akasi, do'sti...)
+                            SizedBox(
+                              width: 120,
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: "Kimniki?",
+                                  hintText: "Masalan: Akasi",
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onChanged: (val) => extraPhones[index].label = val,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            // Telefon raqami
+                            Expanded(
+                              child: _buildField(
+                                "Telefon raqami",
+                                Icons.phone_android,
+                                hint: "+998",
+                                // controller: extraPhones[index].controller, // Controllerni bog'laysiz
+                              ),
+                            ),
+                            // O'chirish tugmasi
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                              onPressed: () => setState(() => extraPhones.removeAt(index)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+                const SizedBox(height: 5),
+
+                TextButton.icon(
+                  onPressed: _addPhoneField,
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text("Boshqa raqam qo'shish"),
+                ),
+
                 const SizedBox(height: 15),
                 _buildField("Details (Batafsil ma'lumot)", Icons.description, maxLines: 2),
-
-                // 7. FAYLLAR VA FOTO (PLACEHOLDERS)
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
