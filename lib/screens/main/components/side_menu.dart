@@ -83,6 +83,13 @@ class SideMenu extends StatelessWidget {
               context.read<MenuAppController>().setMenuIndex(6);
             },
           ),
+          DrawerListTile(
+            title: "Buzilgan mahsulotlar",
+            svgSrc: "assets/icons/menu_profile.svg",
+            press: () {
+              context.read<MenuAppController>().setMenuIndex(9);
+            },
+          ),
 
 
         ],
