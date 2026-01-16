@@ -151,7 +151,9 @@ class _RentedListPageState extends State<RentedListPage> {
         ),
       ),
       DataCell(const Text("12.01.2024")),
-      DataCell(const Text("20.01.2024")),
+      DataCell(TextButton(
+          onPressed: () => _showEditReturnDateDialog(context, {"name": "MacBook Pro M3"}),
+          child: const Text("20.01.2024"))),
       // Holati (Badge)
       DataCell(
         Container(
@@ -199,5 +201,118 @@ class _RentedListPageState extends State<RentedListPage> {
         ),
       ),
     ]);
+  }
+
+  void _showEditReturnDateDialog(BuildContext context, Map<String, dynamic> item) async {
+    // Dastlabki qiymat sifatida joriy qaytarish sanasini olamiz
+    DateTime selectedDate = DateTime.now();
+    TimeOfDay selectedTime = TimeOfDay.now();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              title: Row(
+                children: [
+                  const Icon(Icons.event_repeat, color: Colors.blue),
+                  const SizedBox(width: 10),
+                  const Text("Muddatni o'zgartirish"),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("${item['name']} uchun yangi qaytarish vaqtini belgilang:",
+                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                  const SizedBox(height: 20),
+
+                  // SANA TANLASH TUGMASI
+                  ListTile(
+                    leading: const Icon(Icons.calendar_today, color: Colors.blue),
+                    title: const Text("Sana"),
+                    subtitle: Text("${selectedDate.day}.${selectedDate.month}.${selectedDate.year}"),
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: Colors.grey, width: 0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setDialogState(() => selectedDate = picked);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // VAQT TANLASH TUGMASI (SOAT VA MINUT)
+                  ListTile(
+                    leading: const Icon(Icons.access_time, color: Colors.blue),
+                    title: const Text("Vaqt (Soat va Minut)"),
+                    subtitle: Text(selectedTime.format(context)),
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: Colors.grey, width: 0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onTap: () async {
+                      final TimeOfDay? picked = await showTimePicker(
+                        context: context,
+                        initialTime: selectedTime,
+                      );
+                      if (picked != null) {
+                        setDialogState(() => selectedTime = picked);
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Bekor qilish"),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  onPressed: () {
+                    // SANA VA VAQTNI BIRLASHTIRISH
+                    final DateTime finalDateTime = DateTime(
+                      selectedDate.year,
+                      selectedDate.month,
+                      selectedDate.day,
+                      selectedTime.hour,
+                      selectedTime.minute,
+                    );
+
+                    // BACKENDGA (ASP.NET Core) YUBORISH
+                    print("Yangi qaytarish vaqti: $finalDateTime");
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Qaytarish muddati $finalDateTime ga o'zgartirildi"),
+                        backgroundColor: Colors.blueAccent,
+                      ),
+                    );
+                  },
+                  child: const Text("Saqlash"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
