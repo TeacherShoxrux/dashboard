@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'buttons.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -36,21 +38,21 @@ class DashboardPage extends StatelessWidget {
             const SizedBox(height: 30),
 
             // 3. ASOSIY KONTENT: Grafika va Oxirgi harakatlar
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Chap tomonda asosiy grafik
-                Expanded(flex: 2, child: _buildMainChart()),
-                const SizedBox(width: 24),
-                // O'ng tomonda statuslar bo'yicha qisqacha ma'lumot
-                Expanded(flex: 1, child: _buildStatusSummary()),
-              ],
-            ),
+            // Row(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     // Chap tomonda asosiy grafik
+            //     Expanded(flex: 2, child: _buildMainChart()),
+            //     const SizedBox(width: 24),
+            //     // O'ng tomonda statuslar bo'yicha qisqacha ma'lumot
+            //     Expanded(flex: 1, child: _buildStatusSummary()),
+            //   ],
+            // ),
 
             const SizedBox(height: 30),
-
+            ActionButtons(onRent: () {  }, onBooking: () {  },)
             // 4. OXIRGI IJARALAR VA BAND QILISHLAR (Table)
-            _buildRecentActivitiesTable(),
+            // _buildRecentActivitiesTable(),
           ],
         ),
       ),
