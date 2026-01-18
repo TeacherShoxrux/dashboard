@@ -1,4 +1,3 @@
-import 'package:admin/screens/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'constants.dart';
 import 'controllers/menu_app_controller.dart';
 import 'core/loading/global_loader_widget.dart';
-import 'core/notification/notification_listener_widget.dart';
-import 'core/notification/top_right_notification.dart';
 import 'core/router/app_routes.dart';
 
 void main() {
@@ -27,9 +24,9 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,ref) {
     return MaterialApp.router(
 
       debugShowCheckedModeBanner: false,
@@ -40,13 +37,11 @@ class MyApp extends StatelessWidget {
             .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      routerConfig: AppRoutes.router,
+      routerConfig:ref.read(AppRoutes.goRouterProvider),
       builder: (context, child) {
-        return  TopRightNotificationListener(
-          child: GlobalLoader(
+        return   GlobalLoader(
             child: child!,
-          ),
-        );
+          );
       }
     );
   }

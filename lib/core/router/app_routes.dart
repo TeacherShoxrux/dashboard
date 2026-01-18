@@ -8,12 +8,14 @@ import 'package:admin/screens/profile/profile_page.dart';
 import 'package:admin/screens/rented_list/rented_list_page.dart';
 import 'package:admin/screens/reports/reports_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../screens/customers/customers_screen.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 import '../../screens/main_layout/main_layout.dart';
 import '../../screens/product_selection/product_selection_page.dart';
-import '../notification/top_right_notification.dart';
+import '../notification/notification_provider.dart';
+
 
 
 class AppRoutes {
@@ -30,37 +32,36 @@ class AppRoutes {
   static const String account = '/account';
 
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
+ static final goRouterProvider = Provider<GoRouter>((ref) {
+    return GoRouter(
 
-  static final GoRouter router = GoRouter(
-    initialLocation: login,
-    navigatorKey: rootNavigatorKey,
-    debugLogDiagnostics: true, // Webda debug qilish uchun foydali
-    routes: [
+      initialLocation: login,
+      navigatorKey: ref.watch(rootNavigatorKeyProvider),
+      debugLogDiagnostics: true,
+      routes: [
 
-      GoRoute(path: AppRoutes.login, builder: (context, state) => LoginPage()),
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-        return  TopRightNotificationListener(
-            child: MainLayout(navigationShell: navigationShell),
-          );
-        },
-        branches: [
-          _buildBranch(dashboard, DashboardPage()),
-          _buildBranch(customers, CustomersScreen()),
-          _buildBranch(equipment, ProductSelectionScreen()),
-          _buildBranch(rentals, RentedListPage()),
-          _buildBranch(bookings, BookingListPage()),
-          _buildBranch(cart, CartPage()),
-          _buildBranch(damaged, const DamagedItemsPage()),
-          _buildBranch(staff, const EmployeesPage()),
-          _buildBranch(reports, const ReportsPage()),
-          _buildBranch(account, const ProfilePage()),
-        ],
-      ),
-    ],
-  );
+        GoRoute(path: AppRoutes.login, builder: (context, state) => LoginPage()),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return  MainLayout(navigationShell: navigationShell);
 
-  // Branchlarni qisqartirish uchun yordamchi funksiya
+          },
+          branches: [
+            _buildBranch(dashboard, DashboardPage()),
+            _buildBranch(customers, CustomersScreen()),
+            _buildBranch(equipment, ProductSelectionScreen()),
+            _buildBranch(rentals, RentedListPage()),
+            _buildBranch(bookings, BookingListPage()),
+            _buildBranch(cart, CartPage()),
+            _buildBranch(damaged, const DamagedItemsPage()),
+            _buildBranch(staff, const EmployeesPage()),
+            _buildBranch(reports, const ReportsPage()),
+            _buildBranch(account, const ProfilePage()),
+          ],
+        ),
+      ],
+    );
+  });
   static StatefulShellBranch _buildBranch(String path, Widget screen) {
     return StatefulShellBranch(
       routes: [

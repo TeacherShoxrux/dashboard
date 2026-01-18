@@ -1,9 +1,9 @@
+import 'package:admin/core/notification/top_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/loading/global_loading_notifier.dart';
-import '../../core/notification/app_notification.dart';
-import '../../core/notification/notification_notifier.dart';
+import '../../core/notification/notification_provider.dart';
 import '../../core/router/app_routes.dart';
 import '../main_layout/main_layout.dart';
 
@@ -135,27 +135,16 @@ class LoginPage extends ConsumerWidget {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-
-                        // if (_formKey.currentState!.validate()) {
-                        //   context.go(AppRoutes.dashboard);
-                        // }
                         onPressed: () async {
                           final loading = ref.read(globalLoadingProvider.notifier);
-                          final notify = ref.read(notificationProvider.notifier);
-
                           loading.show();
                           await Future.delayed(const Duration(seconds: 2));
-
-                          ref.read(notificationProvider.notifier).show(
-                            AppNotification(
-                              "Buyurtma muvaffaqiyatli yaratildi",
-                              NotificationType.success,
-                              duration: const Duration(seconds: 4),
-                            ),
-                          );
-
                           loading.hide();
-                      },
+                          ref.read(notificationServiceProvider)
+                              .show("Muvaffaqiyatli kirdinggiz",type: NotificationType.success);
+                          await Future.delayed(const Duration(seconds: 1));
+                          context.go(AppRoutes.dashboard);
+                          },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
