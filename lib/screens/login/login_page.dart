@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/loading/global_loading_notifier.dart';
+import '../../core/notification/app_notification.dart';
+import '../../core/notification/notification_notifier.dart';
+import '../../core/router/app_routes.dart';
+import '../main_layout/main_layout.dart';
 
-import '../main/main_screen.dart';
+// class LoginPage extends StatefulWidget {
+//   const LoginPage({Key? key}) : super(key: key);
+//
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends ConsumerWidget {
+  LoginPage({Key? key}) : super(key: key);
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isObscure = true;
   bool _rememberMe = false;
@@ -18,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       // backgroundColor: Colors.grey[100],
       body: Center(
@@ -90,7 +97,9 @@ class _LoginPageState extends State<LoginPage> {
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _isObscure = !_isObscure),
+                        onPressed: () {
+                            // setState(() => _isObscure = !_isObscure);
+                        }
 
                       ),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -107,7 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Checkbox(
                             value: _rememberMe,
-                            onChanged: (val) => setState(() => _rememberMe = val!),
+                            onChanged: (e){}
+                                // (val) => setState(() => _rememberMe = val!),
                           ),
                           const Text("Eslab qolish", style: TextStyle(fontSize: 13)),
                         ],
@@ -125,13 +135,26 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => MainScreen()),
+
+                        // if (_formKey.currentState!.validate()) {
+                        //   context.go(AppRoutes.dashboard);
+                        // }
+                        onPressed: () async {
+                          final loading = ref.read(globalLoadingProvider.notifier);
+                          final notify = ref.read(notificationProvider.notifier);
+
+                          loading.show();
+                          await Future.delayed(const Duration(seconds: 2));
+
+                          ref.read(notificationProvider.notifier).show(
+                            AppNotification(
+                              "Buyurtma muvaffaqiyatli yaratildi",
+                              NotificationType.success,
+                              duration: const Duration(seconds: 4),
+                            ),
                           );
-                        }
+
+                          loading.hide();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,

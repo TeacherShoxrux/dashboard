@@ -4,6 +4,7 @@ import 'package:admin/screens/cart/cart_page.dart';
 import 'package:admin/screens/damaged_items/damaged_items_page.dart';
 import 'package:admin/screens/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../booking_list/booking_list_page.dart';
@@ -15,21 +16,11 @@ import '../rented_list/rented_list_page.dart';
 import '../reports/reports_page.dart';
 import 'components/side_menu.dart';
 
-class MainScreen extends StatelessWidget {
-  // Sahifalar ro'yxati
-  final List<Widget> _pages = [
-    DashboardPage(),
-    CustomersScreen(), // ProductsScreen()
-    ProductSelectionScreen(),
-    RentedListPage(),
-    BookingListPage(),
-    CartPage(),
-    ProfilePage(),
-    EmployeesPage(),
-    ReportsPage(),
-    DamagedItemsPage()
-  ];
+class MainLayout extends StatelessWidget {
 
+  final StatefulNavigationShell navigationShell;
+
+  const MainLayout({super.key, required this.navigationShell});
   @override
   Widget build(BuildContext context) {
     var menuController = context.watch<MenuAppController>();
@@ -46,12 +37,8 @@ class MainScreen extends StatelessWidget {
                 child: SideMenu(),
               ),
             Expanded(
-              flex: 5,
-              child: IndexedStack(
-                index: menuController.selectedIndex, // Tanlangan indeksga qarab sahifa almashadi
-                children: _pages,
-              ),
-            ),
+                flex: 5,
+                child: navigationShell),
           ],
         ),
       ),
