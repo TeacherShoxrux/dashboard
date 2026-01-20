@@ -19,22 +19,23 @@ import 'components/side_menu.dart';
 class MainLayout extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
-
-  const MainLayout({super.key, required this.navigationShell});
+   MainLayout({super.key, required this.navigationShell});
+   Widget menu=SideMenu();
   @override
   Widget build(BuildContext context) {
     var menuController = context.watch<MenuAppController>();
 
     return Scaffold(
       key: menuController.scaffoldKey,
-      drawer: SideMenu(),
+      appBar: Responsive.isDesktop(context)?null:AppBar(),
+      drawer: menu,
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (Responsive.isDesktop(context))
+             if (Responsive.isDesktop(context))
               Expanded(
-                child: SideMenu(),
+                child:menu,
               ),
             Expanded(
                 flex: 5,
