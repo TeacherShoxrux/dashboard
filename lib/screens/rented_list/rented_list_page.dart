@@ -1,319 +1,138 @@
 import 'package:flutter/material.dart';
 
-import '../booking_list/component/order_details_alert.dart';
-import '../product_selection/components/add_product_alert.dart';
-import 'components/return_product_dialog.dart';
+import 'components/booking_appbar.dart';
 
-class RentedListPage extends StatefulWidget {
-  @override
-  _RentedListPageState createState() => _RentedListPageState();
+// 1. Ma'lumotlar modeli
+class BookingModel {
+  final String id;
+  final String name;
+  final String phone;
+  final String bookingDate;
+  final String startDate;
+  final String status;
+
+  BookingModel({
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.bookingDate,
+    required this.startDate,
+    required this.status,
+  });
 }
 
-class _RentedListPageState extends State<RentedListPage> {
-  final TextEditingController _searchController = TextEditingController();
-  String selectedStatus = "Hammasi";
+// 2. Jadval uchun ma'lumotlar manbasi (DataSource)
+class BookingDataSource extends DataTableSource {
+  final List<BookingModel> _bookings;
+  final BuildContext context;
+
+  BookingDataSource(this._bookings, this.context);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= _bookings.length) return null;
+    final booking = _bookings[index];
+
+    return DataRow(cells: [
+      DataCell(Text(booking.id, style: const TextStyle(color: Colors.white70))),
+      DataCell(Icon(Icons.person, color: Color(0xFF40E0D0))),
+      DataCell(Text(booking.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+      DataCell(Text(booking.phone, style: const TextStyle(color: Colors.white70))),
+      DataCell(Text(booking.bookingDate, style: const TextStyle(color: Colors.white70))),
+      DataCell(Text(booking.startDate, style: const TextStyle(color: Colors.white70))),
+      DataCell(_buildStatusChip(booking.status)),
+      DataCell(Row(
+        children: [
+          IconButton(icon: const Icon(Icons.play_circle_fill, color: Colors.green), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.cancel, color: Colors.redAccent), onPressed: () {}),
+        ],
+      )),
+    ]);
+  }
+
+  Widget _buildStatusChip(String status) {
+    Color color;
+    switch (status) {
+      case "Tasdiqlangan": color = Colors.green; break;
+      case "Kutilmoqda": color = Colors.orange; break;
+      case "Bekor qilingan": color = Colors.red; break;
+      default: color = Colors.grey;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Text(status, style: TextStyle(color: color, fontSize: 12)),
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _bookings.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+// 3. Asosiy sahifa
+class RentedListPage extends StatefulWidget {
+  const RentedListPage({super.key});
+
+  @override
+  State<RentedListPage> createState() => _ResponsiveBookingPageState();
+}
+
+class _ResponsiveBookingPageState extends State<RentedListPage> {
+  // Namuna uchun ma'lumotlar
+  final List<BookingModel> _data = List.generate(50, (index) => BookingModel(
+    id: "#${1000 + index}",
+    name: "Javohir Qudratov",
+    phone: "+998 90 123 45 67",
+    bookingDate: "24.01.2026",
+    startDate: "10:00 - 20:00",
+    status: index % 3 == 0 ? "Tasdiqlangan" : (index % 3 == 1 ? "Kutilmoqda" : "Bekor qilingan"),
+  ));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Ijaradagi mahsulotlar ro'yxati",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-
-            // 1. QIDIRUV VA FILTR QISMI
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: "Mijoz yoki mahsulot bo'yicha qidirish...",
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      filled: true,
-                      // fillColor: Colors.grey[50],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 1,
-                  child: DropdownButtonFormField<String>(
-                    // dropdownColor: Colors.transparent,
-                    value: selectedStatus,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    items: ["Hammasi", "Ijarada", "Muddati o'tgan", "Qaytarilgan"]
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                        .toList(),
-                    onChanged: (val) => setState(() => selectedStatus = val!),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // 2. IJARADAGILAR JADVALI
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[200]!),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SingleChildScrollView(
-                  child: DataTable(
-                    // headingRowColor: MaterialStateProperty.all(Colors.grey[50]),
-                    columns: const [
-                      DataColumn(label: Text('Mijoz')),
-                      DataColumn(label: Text('Mahsulot')),
-                      DataColumn(label: Text('Olingan sana')),
-                      DataColumn(label: Text('Qaytish sanasi')),
-                      DataColumn(label: Text('Holati')),
-                      DataColumn(label: Text('Amallar')),
-                    ],
-                    rows: List.generate(110, (index) => _buildRentRow(index)),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  DataRow _buildRentRow(int index) {
-    return DataRow(cells: [
-      // Mijoz ma'lumotlari
-      DataCell(
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Ali Valiyev", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("+998 90 123 45 67", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-          ],
-        ),
-      ),
-      // Mahsulot ma'lumotlari
-      DataCell(
-        TextButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => OrderDetailsDialog(
-                orderData: {
-                  "id": "1045",
-                  "status": "Ijarada",
-                  "customer_name": "Ali Valiyev",
-                  "customer_phone": "+998 90 123 45 67",
-                  "start_date": "12.01.2026",
-                  "end_date": "20.01.2026",
-                  "total_amount": 2500000.0,
-                  "paid_amount": 1000000.0,
-                  "products": [
-                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
-                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
-                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
-                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
-                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
-                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
-                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
-                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
-                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
-                    {"name": "Sony A7III", "qty": 1, "price": 1500000},
-                    {"name": "24-70mm Lens", "qty": 1, "price": 800000},
-                    {"name": "Tripod Stand", "qty": 1, "price": 200000},
-                  ]
-                },
-              ),
-            );
-          },
-          child: Row(
-            children: [
-              const Icon(Icons.laptop, size: 20, color: Colors.blue),
-              const SizedBox(width: 8),
-              const Text("MacBook Pro M3"),
+      backgroundColor: const Color(0xFF0F1221),
+      appBar: BookingAppBar(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Theme(
+          // Jadvalni to'q rangga moslash
+          data: Theme.of(context).copyWith(
+            cardColor: const Color(0xFF161A33),
+            dividerColor: Colors.white10,
+            textTheme: const TextTheme(bodySmall: TextStyle(color: Colors.white)),
+          ),
+          child: PaginatedDataTable(
+            header: const Text("Mijozlar bandlovi", style: TextStyle(color: Colors.white)),
+            rowsPerPage: 10,
+            columnSpacing: 20,
+            horizontalMargin: 15,
+            showFirstLastButtons: true,
+            arrowHeadColor: const Color(0xFF40E0D0),
+            columns: const [
+              DataColumn(label: Text("ID", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Rasmi", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Ism Familya", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Tel raqam", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Bron sanasi", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Boshlash", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Holati", style: TextStyle(color: Color(0xFF40E0D0)))),
+              DataColumn(label: Text("Amallar", style: TextStyle(color: Color(0xFF40E0D0)))),
             ],
+            source: BookingDataSource(_data, context),
           ),
         ),
       ),
-      DataCell(const Text("12.01.2024")),
-      DataCell(TextButton(
-          autofocus: false,
-          onPressed: () => _showEditReturnDateDialog(context, {"name": "MacBook Pro M3"}),
-          child: const Text("20.01.2024"))),
-      // Holati (Badge)
-      DataCell(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: index % 3 == 0 ? Colors.red[50] : Colors.green[50],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            index % 3 == 0 ? "Muddati o'tgan" : "Ijarada",
-            style: TextStyle(
-              color: index % 3 == 0 ? Colors.red : Colors.green,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-      // Amallar
-      DataCell(
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.assignment_return, color: Colors.green),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => ReturnProductDialog(
-                    customerName: "Ali Valiyev",
-                    rentedItems: [
-                      {"name": "Sony A7III", "qty": 2},
-                      {"name": "24-70mm Lens", "qty": 1},
-                    ],
-                  ),
-                );
-              }, // Qaytarib olish funksiyasi
-              tooltip: "Qaytarib olish",
-            ),
-            IconButton(
-              icon: const Icon(Icons.print, color: Colors.grey),
-              onPressed: () {}, // Shartnomani chop etish
-              tooltip: "Chek chiqarish",
-            ),
-          ],
-        ),
-      ),
-    ]);
-  }
-
-  void _showEditReturnDateDialog(BuildContext context, Map<String, dynamic> item) async {
-    // Dastlabki qiymat sifatida joriy qaytarish sanasini olamiz
-    DateTime selectedDate = DateTime.now();
-    TimeOfDay selectedTime = TimeOfDay.now();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              title: Row(
-                children: [
-                  const Icon(Icons.event_repeat, color: Colors.blue),
-                  const SizedBox(width: 10),
-                  const Text("Muddatni o'zgartirish"),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("${item['name']} uchun yangi qaytarish vaqtini belgilang:",
-                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  const SizedBox(height: 20),
-
-                  // SANA TANLASH TUGMASI
-                  ListTile(
-                    leading: const Icon(Icons.calendar_today, color: Colors.blue),
-                    title: const Text("Sana"),
-                    subtitle: Text("${selectedDate.day}.${selectedDate.month}.${selectedDate.year}"),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: Colors.grey, width: 0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onTap: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2030),
-                      );
-                      if (picked != null) {
-                        setDialogState(() => selectedDate = picked);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 15),
-
-                  // VAQT TANLASH TUGMASI (SOAT VA MINUT)
-                  ListTile(
-                    leading: const Icon(Icons.access_time, color: Colors.blue),
-                    title: const Text("Vaqt (Soat va Minut)"),
-                    subtitle: Text(selectedTime.format(context)),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: Colors.grey, width: 0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onTap: () async {
-                      final TimeOfDay? picked = await showTimePicker(
-                        context: context,
-                        initialTime: selectedTime,
-                      );
-                      if (picked != null) {
-                        setDialogState(() => selectedTime = picked);
-                      }
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Bekor qilish"),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  onPressed: () {
-                    // SANA VA VAQTNI BIRLASHTIRISH
-                    final DateTime finalDateTime = DateTime(
-                      selectedDate.year,
-                      selectedDate.month,
-                      selectedDate.day,
-                      selectedTime.hour,
-                      selectedTime.minute,
-                    );
-
-                    // BACKENDGA (ASP.NET Core) YUBORISH
-                    print("Yangi qaytarish vaqti: $finalDateTime");
-
-                    Navigator.pop(context);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Qaytarish muddati $finalDateTime ga o'zgartirildi"),
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                    );
-                  },
-                  child: const Text("Saqlash"),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

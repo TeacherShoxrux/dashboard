@@ -17,7 +17,7 @@ class SideMenu extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            title: "Dashboard sahifasi",
+            title: "Bosh sahifa",
             svgSrc: "assets/icons/menu_dashboard.svg",
             route: AppRoutes.dashboard,
             currentRoute: currentRoute,
@@ -45,7 +45,7 @@ class SideMenu extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            title: "Band qilinganlar",
+            title: "Qabul qilish",
             svgSrc: "assets/icons/menu_store.svg",
             route: AppRoutes.bookings,
             currentRoute: currentRoute,
@@ -55,6 +55,13 @@ class SideMenu extends StatelessWidget {
             title: "Band qilish",
             svgSrc: "assets/icons/menu_notification.svg",
             route: AppRoutes.cart,
+            currentRoute: currentRoute,
+          ),
+          _buildMenuItem(
+            context,
+            title: "Ijarga berish",
+            svgSrc: "assets/icons/menu_profile.svg",
+            route: AppRoutes.rent,
             currentRoute: currentRoute,
           ),
           _buildMenuItem(

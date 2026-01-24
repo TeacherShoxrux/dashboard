@@ -34,21 +34,9 @@ class CartPage extends StatefulWidget {
 class _RentFormPageState extends State<CartPage> {
   Client? selectedClient;
   List<Machine> selectedMachines = [];
-  DateTimeRange? selectedDateRange;
+  DateTimeRange? selectedDateRange=DateTimeRange(start: DateTime.now(), end: DateTime.now().add(Duration(days: 19)));
   TimeOfDay startTime = const TimeOfDay(hour: 09, minute: 00);
   TimeOfDay endTime = const TimeOfDay(hour: 18, minute: 00);
-
-  // Sample Data
-  final List<Client> _clients = [
-    Client("Ali", "Valiyev", "AA1234567", "GUV001"),
-    Client("Sardor", "Rahimov", "AB7654321", "GUV002"),
-  ];
-
-  final List<Machine> _machines = [
-    Machine("Ekskavator", "https://via.placeholder.com/50", 5, "1,200,000"),
-    Machine("Kran", "https://via.placeholder.com/50", 2, "2,500,000"),
-  ];
-
   @override
   Widget build(BuildContext context) {
     bool isMobile = MediaQuery.of(context).size.width < 900;

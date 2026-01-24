@@ -5,6 +5,7 @@ import 'package:admin/screens/employee/employee_page.dart';
 import 'package:admin/screens/login/login_page.dart';
 
 import 'package:admin/screens/profile/profile_page.dart';
+import 'package:admin/screens/rent/rent_page.dart';
 import 'package:admin/screens/rented_list/rented_list_page.dart';
 import 'package:admin/screens/reports/reports_page.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String bookings = '/bookings';
   static const String cart = '/cart';
   static const String damaged = '/damaged';
+  static const String rent = '/rent';
   static const String staff = '/staff';
   static const String reports = '/reports';
   static const String account = '/account';
@@ -53,6 +55,7 @@ class AppRoutes {
             _buildBranch(rentals, RentedListPage()),
             _buildBranch(bookings, BookingListPage()),
             _buildBranch(cart, CartPage()),
+            _buildBranch(rent, RentPage()),
             _buildBranch(damaged, const DamagedItemsPage()),
             _buildBranch(staff, const EmployeesPage()),
             _buildBranch(reports, const ReportsPage()),
