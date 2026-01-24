@@ -52,7 +52,7 @@ class SideMenu extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            title: "Savatcha",
+            title: "Band qilish",
             svgSrc: "assets/icons/menu_notification.svg",
             route: AppRoutes.cart,
             currentRoute: currentRoute,

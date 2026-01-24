@@ -1,190 +1,166 @@
+import 'package:admin/core/router/app_routes.dart';
 import 'package:flutter/material.dart';
-
-import 'buttons.dart';
+import 'package:go_router/go_router.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.grey[100],
+      appBar: _buildAppBar(context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 1. XUSH KELIBSIZ VA BUGUNGI SANA
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            const SizedBox(height: 32),
+
+            // --- MAIN ACTION BUTTONS ---
+
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Xush kelibsiz, Admin 👋",
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                    Text("Bugun: 16-Yanvar, 2026",
-                        style: TextStyle(color: Colors.grey, fontSize: 16)),
-                  ],
+                _buildActionCard(
+                    title: "Ijaraga\nberish",
+                    icon: Icons.add,
+                    color: const Color(0xFF16A34A),
+                      context: context,
+                  onPressed: ()=>context.go(AppRoutes.cart)
                 ),
-                Icon(Icons.notifications_none, size: 30, color: Colors.blueGrey),
+                _buildActionCard(
+                    title: "Qabul\nqilish",
+                    icon: Icons.remove,
+                    color: Colors.purple,
+                    context: context,
+                    isGradient: true,
+                    onPressed: ()=>context.go(AppRoutes.cart)
+                ),
+                _buildActionCard(
+                    title: "Band qilish",
+                    icon: Icons.calendar_today,
+                    color: const Color(0xFFEA580C),
+                    onPressed:()=> context.go(AppRoutes.cart),
+                    context: context),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
-            // 2. TEZKOR STATISTIKA (KPI Cards)
-            _buildQuickStats(),
-
-            const SizedBox(height: 30),
-
-            // 3. ASOSIY KONTENT: Grafika va Oxirgi harakatlar
-            // Row(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     // Chap tomonda asosiy grafik
-            //     Expanded(flex: 2, child: _buildMainChart()),
-            //     const SizedBox(width: 24),
-            //     // O'ng tomonda statuslar bo'yicha qisqacha ma'lumot
-            //     Expanded(flex: 1, child: _buildStatusSummary()),
-            //   ],
-            // ),
-
-            const SizedBox(height: 30),
-            ActionButtons(onRent: () {  }, onBooking: () {  },)
-            // 4. OXIRGI IJARALAR VA BAND QILISHLAR (Table)
-            // _buildRecentActivitiesTable(),
+            // --- STATISTICS CARDS ---
+            Wrap(
+              spacing: 12.0, // Gorizontal oraliq
+              runSpacing: 12.0, // Vertikal oraliq (keyingi qatorga o'tganda)
+              alignment: WrapAlignment.start,
+              children: [
+                _buildCompactStatCard(
+                    "Faol ijaralar", "42 ta", Icons.description, Colors.blue),
+                _buildCompactStatCard("Bugungi tushum", "1,260,000 so'm",
+                    Icons.attach_money, Colors.green),
+                _buildCompactStatCard("Band qilinganlar", "15 ta",
+                    Icons.event_available, Colors.orange),
+                _buildCompactStatCard(
+                    "Qarzdorlar", "8 ta", Icons.error_outline, Colors.red),
+              ],
+            )
           ],
         ),
       ),
     );
   }
 
-  // Tezkor ko'rsatkichlar kartalari
-  Widget _buildQuickStats() {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 16,
-      children: [
-        _statCard("Faol ijaralar", "42 ta", Icons.swap_horizontal_circle, Colors.blue),
-        _statCard("Bugungi tushum", "1,250,000 so'm", Icons.account_balance_wallet, Colors.green),
-        _statCard("Band qilinganlar", "15 ta", Icons.event_available, Colors.orange),
-        _statCard("Qarzdorlar", "8 ta", Icons.assignment_late, Colors.red),
-      ],
-    );
-  }
-
-  Widget _statCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      width: 250, // Webda barqaror kenglik, Mobileda Wrap pastga tushiradi
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.indigo.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: color.withOpacity(0.1),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-              Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Grafik o'rni
-  Widget _buildMainChart() {
-    return Container(
-      height: 350,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: Colors.indigo.withOpacity(0.3), borderRadius: BorderRadius.circular(16)),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Haftalik ijara dinamikasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Spacer(),
-          Center(child: Text("Haftalik grafik (fl_chart) bu yerda bo'ladi", style: TextStyle(color: Colors.grey))),
-          Spacer(),
-        ],
-      ),
-    );
-  }
-
-  // Statuslar bo'yicha qisqacha ma'lumot
-  Widget _buildStatusSummary() {
-    return Container(
-      height: 350,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: Colors.indigo.withOpacity(0.25), borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Mahsulotlar holati", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          _statusItem("Do'konda", 120, Colors.green),
-          _statusItem("Ijarada", 42, Colors.blue),
-          _statusItem("Servisda", 5, Colors.orange),
-          _statusItem("Yo'qolgan", 2, Colors.red),
-        ],
-      ),
-    );
-  }
-
-  Widget _statusItem(String label, int count, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
+  // Header vidjeti
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color(0xFF0F172A),
+      elevation: 0,
+      toolbarHeight: 80, // Balandlikni Wrap uchun yetarli qilib belgilaymiz
+      automaticallyImplyLeading:
+          false, // Default orqaga qaytish tugmasini o'chirish
+      title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        spacing: 12,
+        // alignment: WrapAlignment.spaceBetween,
+        // crossAxisAlignment: WrapCrossAlignment.center,
+        // runSpacing: 12,
         children: [
-          Row(
-            children: [
-              Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-              const SizedBox(width: 10),
-              Text(label),
-            ],
+          // VAQT VA SANA
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text("Shanba, 24 Yanvar 2026",
+                    style: TextStyle(color: Colors.grey, fontSize: 10)),
+                Text("15 : 15",
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              ],
+            ),
           ),
-          Text(count.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-  Widget _buildRecentActivitiesTable() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: Colors.indigo.withOpacity(0.35), borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Oxirgi ijara harakatlari", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          Table(
-            columnWidths: const {
-              0: FlexColumnWidth(2),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(1),
-              3: FlexColumnWidth(1),
-            },
+
+          // KURS (Faqat keng ekranlarda ko'rinadi yoki Wrap orqali pastga tushadi)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              "Ichki kurs: 100 \$ = 1 200 000 so'm (faqat admin kiritadi)",
+              style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal),
+            ),
+          ),
+
+          // PROFIL VA BILDIRIShNOMA
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const TableRow(
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Text("O'z.ru ", style: TextStyle(fontSize: 13)),
+                    Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                            color: Colors.green, shape: BoxShape.circle)),
+                    const Text(" Admin",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13)),
+                    const Icon(Icons.keyboard_arrow_down, size: 16),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Stack(
                 children: [
-                  Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text("Mijoz", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Text("Mahsulot", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Vaqt", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("Status", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Icon(Icons.notifications_none,
+                      color: Colors.white70, size: 24),
+                  Positioned(
+                    right: 2,
+                    top: 2,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
+                    ),
+                  )
                 ],
               ),
-              _buildTableRow("Rustam Axmerov", "Sony A7 III", "10:45", "Berildi"),
-              _buildTableRow("Jasmin Abdujamulova", "MacBook Pro", "09:30", "Qaytdi"),
-              _buildTableRow("Shavkat Sapashov", "GoPro Hero 11", "08:15", "Berildi"),
             ],
           ),
         ],
@@ -192,14 +168,118 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  TableRow _buildTableRow(String mijoz, String item, String time, String status) {
-    return TableRow(
-      children: [
-        Padding(padding: const EdgeInsets.symmetric(vertical: 12.0), child: Text(mijoz)),
-        Text(item),
-        Text(time),
-        Text(status, style: TextStyle(color: status == "Berildi" ? Colors.blue : Colors.green, fontWeight: FontWeight.bold)),
-      ],
+  // Katta tugmalar uchun vidjet
+  Widget _buildActionCard(
+      {required String title,
+      required IconData icon,
+      required Color color,
+      required BuildContext context,
+      bool isGradient = false,
+      VoidCallback? onPressed}) {
+    double cardWidth = MediaQuery.of(context).size.width > 600
+        ? 280
+        : (MediaQuery.of(context).size.width - 64) / 2;
+    // Mobil ekranda tugma kengligi biroz kattaroq, lekin chegaralangan bo'ladi
+
+    // Agar ekran juda kichik bo'lsa (masalan iPhone SE), 160px dan kam bo'lmasligi kerak
+    // if (cardWidth < 160) cardWidth = MediaQuery.of(context).size.width - 48;
+
+    return Container(
+      width: cardWidth,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isGradient ? null : color,
+        gradient: isGradient
+            ? const LinearGradient(
+                colors: [Color(0xFFA21CAF), Color(0xFFDB2777)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  height: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Pastki statistika kartalari uchun vidjet
+  Widget _buildCompactStatCard(
+      String title, String value, IconData icon, Color color) {
+    // Kartaning maksimal kengligini belgilaymiz (masalan, 250-280 atrofida yaxshi turadi)
+    return Container(
+      width: 240, // Karta juda kengayib ketmasligi uchun aniq kenglik
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        // Balandlikni kamaytirish uchun Row-dan foydalanamiz
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(10)),
+            child: Icon(icon, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Bo'sh joyni tejash
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
