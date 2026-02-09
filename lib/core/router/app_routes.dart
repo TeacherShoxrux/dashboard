@@ -28,7 +28,7 @@ class AppRoutes {
   static const String bookings = '/bookings';
   static const String cart = '/cart';
   static const String damaged = '/damaged';
-  static const String rent = '/rent';
+  static const String rent = '/rents';
   static const String staff = '/staff';
   static const String reports = '/reports';
   static const String account = '/account';

@@ -28,7 +28,7 @@ class DashboardPage extends StatelessWidget {
                     icon: Icons.add,
                     color: const Color(0xFF16A34A),
                       context: context,
-                  onPressed: ()=>context.go(AppRoutes.cart)
+                  onPressed: ()=>context.go(AppRoutes.rent)
                 ),
                 _buildActionCard(
                     title: "Qabul\nqilish",
@@ -36,7 +36,7 @@ class DashboardPage extends StatelessWidget {
                     color: Colors.purple,
                     context: context,
                     isGradient: true,
-                    onPressed: ()=>context.go(AppRoutes.cart)
+                    onPressed: ()=>context.go(AppRoutes.bookings)
                 ),
                 _buildActionCard(
                     title: "Band qilish",
