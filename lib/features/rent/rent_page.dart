@@ -1,4 +1,4 @@
-import 'package:admin/screens/rent/side.dart';
+import 'package:admin/features/rent/side.dart';
 import 'package:flutter/material.dart';
 import '../main_layout/date_range_picker.dart';
 import 'customer_search.dart';

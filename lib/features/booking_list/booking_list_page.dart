@@ -1,5 +1,5 @@
-import 'package:admin/screens/booking_list/customer_search.dart';
-import 'package:admin/screens/booking_list/return_rental.dart';
+import 'package:admin/features/booking_list/customer_search.dart';
+import 'package:admin/features/booking_list/return_rental.dart';
 import 'package:flutter/material.dart';
 
 import '../main_layout/date_range_picker.dart';

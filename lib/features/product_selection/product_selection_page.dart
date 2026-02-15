@@ -1,5 +1,5 @@
-import 'package:admin/screens/product_selection/components/add_category_alert.dart';
-import 'package:admin/screens/product_selection/components/product_card.dart';
+import 'package:admin/features/product_selection/components/add_category_alert.dart';
+import 'package:admin/features/product_selection/components/product_card.dart';
 import 'package:flutter/material.dart';
 
 import 'components/add_brand_dialog.dart';
@@ -7,10 +7,10 @@ import 'components/add_product_alert.dart';
 
 class ProductSelectionScreen extends StatefulWidget {
   @override
-  _VisualSelectionScreenState createState() => _VisualSelectionScreenState();
+  _VisualSelectionfeaturestate createState() => _VisualSelectionfeaturestate();
 }
 
-class _VisualSelectionScreenState extends State<ProductSelectionScreen> {
+class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
   String? selectedBrand;
   String? selectedCategory;
   final TextEditingController _searchController = TextEditingController();

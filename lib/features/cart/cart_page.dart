@@ -1,5 +1,5 @@
-import 'package:admin/screens/cart/customer_search.dart';
-import 'package:admin/screens/cart/side.dart';
+import 'package:admin/features/cart/customer_search.dart';
+import 'package:admin/features/cart/side.dart';
 import 'package:flutter/material.dart';
 
 import 'components/equipment_autocomplete.dart';

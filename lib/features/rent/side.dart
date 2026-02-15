@@ -1,4 +1,4 @@
-import 'package:admin/screens/rent/renta_proccess.dart';
+import 'package:admin/features/rent/renta_proccess.dart';
 import 'package:flutter/material.dart';
 
 import 'equipment_search.dart';

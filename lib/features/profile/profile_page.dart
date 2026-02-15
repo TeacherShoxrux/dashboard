@@ -1,4 +1,4 @@
-import 'package:admin/screens/profile/components/site_branding.dart';
+import 'package:admin/features/profile/components/site_branding.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {

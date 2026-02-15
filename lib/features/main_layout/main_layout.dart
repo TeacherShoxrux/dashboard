@@ -1,8 +1,8 @@
 import 'package:admin/controllers/menu_app_controller.dart';
 import 'package:admin/responsive.dart';
-import 'package:admin/screens/cart/cart_page.dart';
-import 'package:admin/screens/damaged_items/damaged_items_page.dart';
-import 'package:admin/screens/dashboard/dashboard_screen.dart';
+import 'package:admin/features/cart/cart_page.dart';
+import 'package:admin/features/damaged_items/damaged_items_page.dart';
+import 'package:admin/features/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
