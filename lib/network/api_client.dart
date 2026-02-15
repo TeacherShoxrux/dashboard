@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:admin/network/auth_iterceptor.dart';
+import 'package:admin/network/result_converter.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/equipments/data/equipment_service.dart';
+import 'api_constants.dart';
 // Kelajakda boshqa service-larni ham shu yerga import qilasiz
 
 final apiClientProvider = Provider<ChopperClient>((ref) {
   return ChopperClient(
-    // .NET backend manzili (Emulator uchun 10.0.2.2 ishlatiladi)
-    baseUrl: Uri.parse('http://10.0.2.2:5000'),
-
-    // Barcha service-larni bitta joyda ro'yxatdan o'tkazamiz
+    baseUrl: Uri.parse(ApiConstants.baseUrl),
     services: [
       EquipmentService.create(),
       // AuthService.create(),
@@ -19,12 +18,12 @@ final apiClientProvider = Provider<ChopperClient>((ref) {
     ],
 
     // JSON-ni avtomatik o'girish uchun markaziy konverter
-    converter: const JsonConverter(),
+    converter: ResultConverter(),
 
     // BARCHA service-lar uchun bir xil interceptorlar
     interceptors: [
       HttpLoggingInterceptor(),
-      AuthInterceptor()
+      // AuthInterceptor()
     ],
   );
 });

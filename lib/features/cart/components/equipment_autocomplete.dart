@@ -100,19 +100,3 @@ class EquipmentAutocomplete extends StatelessWidget {
     );
   }
 }
-
-class EquipmentModel {
-  final String name;
-  final String brand;
-  final String category;
-  final String imageUrl;
-   int stockCount;
-
-  EquipmentModel({
-    required this.name,
-    required this.brand,
-    required this.category,
-    required this.imageUrl,
-    required this.stockCount,
-  });
-}

@@ -1,21 +1,41 @@
 // lib/features/equipment/data/services/equipment_service.dart
 import 'package:chopper/chopper.dart';
 
+import '../../../network/model_response.dart';
+import '../../../network/response_base.dart';
+import '../../cart/components/equipment_autocomplete.dart';
+import '../../cart/equipment_search.dart';
+import '../domain/models/equipment_model.dart';
+
 // Kod generatori uchun kerak
 part 'equipment_service.chopper.dart';
 
-@ChopperApi(baseUrl: '/api/equipment') // .NET Controller manzili
+@ChopperApi(baseUrl: '/api/Equipments') // .NET Controller manzili
 abstract class EquipmentService extends ChopperService {
-
   // Barcha uskunalarni olish
   @GET()
-  Future<Response> getEquipments();
+  Future<Response<Result<BaseResponse<List<EquipmentModel>>>>> getEquipments(
+      {@Query('BrandId') int? brandId,
+      @Query('CategoryId') int? categoryId,
+      @Query('Search') String? search,
+      @Query('Page') int? page = 1,
+      @Query('PageSize') int? pageSize = 20});
 
-  // ID bo'yicha bitta uskunani olish
-  @GET(path: '/{id}')
-  Future<Response> getEquipmentDetails(@Path('id') int id);
+  @GET(path: '/brands')
+  Future<Response> getBrand();
 
-  // Yangi uskuna qo'shish (Admin uchun)
+  @POST(path: '/brands')
+  Future<Response> createBrand();
+
+  @GET(path: '/categories')
+  Future<Response> getCategories();
+
+  @GET(path: '/brands/{id}/categories')
+  Future<Response> getByBrandIdCategories(int id);
+
+  @POST(path: '/categories')
+  Future<Response> createCategories();
+
   @POST()
   Future<Response> addEquipment(@Body() Map<String, dynamic> body);
 
