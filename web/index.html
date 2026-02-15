@@ -246,6 +246,13 @@
           }
         }, 10000);
       };
+      window.addEventListener('load', function(ev) {
+    _flutter.loader.load({
+      serviceWorker: {
+        serviceWorkerVersion: serviceWorkerVersion,
+      }
+    });
+  });
     </script>
   </body>
 </html>

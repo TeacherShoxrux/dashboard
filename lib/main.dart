@@ -10,6 +10,8 @@ import 'core/loading/global_loader_widget.dart';
 import 'core/router/app_routes.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
   runApp(
     MultiProvider(
       providers: [

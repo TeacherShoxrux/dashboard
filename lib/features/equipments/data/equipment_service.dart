@@ -1,10 +1,7 @@
 // lib/features/equipment/data/services/equipment_service.dart
 import 'package:chopper/chopper.dart';
-
 import '../../../network/model_response.dart';
 import '../../../network/response_base.dart';
-import '../../cart/components/equipment_autocomplete.dart';
-import '../../cart/equipment_search.dart';
 import '../domain/models/equipment_model.dart';
 
 // Kod generatori uchun kerak
@@ -12,9 +9,8 @@ part 'equipment_service.chopper.dart';
 
 @ChopperApi(baseUrl: '/api/Equipments') // .NET Controller manzili
 abstract class EquipmentService extends ChopperService {
-  // Barcha uskunalarni olish
   @GET()
-  Future<Response<Result<BaseResponse<List<EquipmentModel>>>>> getEquipments(
+  Future<Response<dynamic>> getEquipments(
       {@Query('BrandId') int? brandId,
       @Query('CategoryId') int? categoryId,
       @Query('Search') String? search,

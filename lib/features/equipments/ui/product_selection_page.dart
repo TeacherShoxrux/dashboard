@@ -1,18 +1,19 @@
 
 
+import 'package:admin/features/equipments/ui/providers/equipment_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../network/response_base.dart';
+import '../domain/models/equipment_model.dart';
 import 'components/add_brand_dialog.dart';
 import 'components/add_category_alert.dart';
 import 'components/add_product_alert.dart';
 import 'components/product_card.dart';
 
-class ProductSelectionScreen extends StatefulWidget {
-  @override
-  _VisualSelectionfeaturestate createState() => _VisualSelectionfeaturestate();
-}
 
-class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
+
+class ProductSelectionScreen extends ConsumerWidget {
   String? selectedBrand;
   String? selectedCategory;
   final TextEditingController _searchController = TextEditingController();
@@ -33,14 +34,20 @@ class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
     ],
     // Boshqa brendlar uchun ham shunday...
   };
-
+  final equipmentProvider = AsyncNotifierProvider<EquipmentNotifier, BaseResponse<List<EquipmentModel>>>(
+        () => EquipmentNotifier(),
+  );
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    final state = ref.watch(equipmentProvider);
     return Scaffold(
-      // backgroundColor: Colors.white,
-      body: CustomScrollView(
+
+
+      body: state.when(
+          data: (response) {
+            final items = response.data ?? [];
+            return CustomScrollView(
         slivers: [
-          // 1. QIDIRUV TEXTFIELD (Tepada qotib turadi)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -124,10 +131,10 @@ class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
                       bool isSelected = selectedBrand == brands[brandIndex]['name'];
 
                       return GestureDetector(
-                        onTap: () => setState(() {
-                          selectedBrand = brands[brandIndex]['name'];
-                          selectedCategory = null;
-                        }),
+                        // onTap: () => setState(() {
+                        //   selectedBrand = brands[brandIndex]['name'];
+                        //   selectedCategory = null;
+                        // }),
                         child: AnimatedContainer(
                           duration: Duration(milliseconds: 200),
                           width: 80,
@@ -205,7 +212,7 @@ class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
                         var cat = categories[selectedBrand]![index];
                         bool isSelected = selectedCategory == cat['name'];
                         return GestureDetector(
-                          onTap: () => setState(() => selectedCategory = cat['name']),
+                          // onTap: () => setState(() => selectedCategory = cat['name']),
                           child: Card(
                             color: isSelected ? Colors.orange.withOpacity(0.1) : Colors.transparent,
                             shape: RoundedRectangleBorder(
@@ -244,17 +251,23 @@ class _VisualSelectionfeaturestate extends State<ProductSelectionScreen> {
               delegate: SliverChildBuilderDelegate(
                     (context, index) {
                   return ProductCard(
-                    name: "MacBook Pro M3",
-                    subName: "Noutbuklar / Apple",
-                    price: "150,000",
+                    name: items[index].name,
+                    subName: "${items[index].brandName} / ${items[index].categoryName}",
+                    price: "${items[index].pricePerDay}",
                   );
                 },
-                childCount: 8, // Filtrlangan mahsulotlar soni
+                childCount: items.length // Filtrlangan mahsulotlar soni
               ),
             ),
           ),
         ],
-      ),
+      );},
+    loading: () => const Center(child: CircularProgressIndicator()),
+    // Repository-dan Error (Failure) qaytganda
+    error: (error, stackTrace) => Center(
+    child: Text("Xatolik yuz berdi: $error"),
+    )),
+
     );
   }
 }

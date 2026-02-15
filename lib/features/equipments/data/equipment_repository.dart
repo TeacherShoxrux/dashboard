@@ -14,17 +14,23 @@ class EquipmentRepository extends BaseRepository {
 
   // 1. Barcha uskunalar ro'yxatini olish (Pagination bilan)
   Future<Result<BaseResponse<List<EquipmentModel>>>> getEquipments() async {
+
     return safeApiCall(
           () => _equipmentService.getEquipments(),
-          (json) => (json as List).map((item) => EquipmentModel.fromJson(item)).toList(),
+            (json) {
+          if (json == null) return <EquipmentModel>[];
+          final list = json as List<dynamic>;
+
+          return list.map((item) => EquipmentModel.fromJson(item as Map<String, dynamic>)).toList();
+        }
     );
   }
 
   // 2. Bitta uskuna tafsilotlarini olish
-  Future<Result<BaseResponse<EquipmentModel>>> getEquipmentDetails(int id) async {
-    return safeApiCall(
-          () => _equipmentService.getEquipments(),
-          (json) => EquipmentModel.fromJson(json),
-    );
-  }
+  // Future<Result<BaseResponse<EquipmentModel>>> getEquipmentDetails(int id) async {
+  //   return safeApiCall(
+  //         () => _equipmentService.getEquipments(),
+  //         (json) => EquipmentModel.fromJson(json),
+  //   );
+  // }
 }

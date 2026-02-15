@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../equipments/domain/models/equipment_model.dart';
+
 class EquipmentAutocomplete extends StatelessWidget {
   final List<EquipmentModel> suggestions;
   final Function(EquipmentModel) onSelected;
@@ -64,7 +66,7 @@ class EquipmentAutocomplete extends StatelessWidget {
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            option.imageUrl,
+                            option.name,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -72,15 +74,15 @@ class EquipmentAutocomplete extends StatelessWidget {
                           ),
                         ),
                         title: Text(option.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("${option.brand} • ${option.category}"),
+                        subtitle: Text("${option.brandName} • ${option.categoryName}"),
                         trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              "${option.stockCount} dona",
+                              "${option.availableCount} dona",
                               style: TextStyle(
-                                color: option.stockCount > 0 ? Colors.green : Colors.red,
+                                color: option.pricePerDay > 0 ? Colors.green : Colors.red,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
