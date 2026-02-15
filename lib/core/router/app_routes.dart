@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/customers/customers_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/main_layout/main_layout.dart';
-import '../../features/product_selection/product_selection_page.dart';
+import '../../features/equipments/ui/product_selection_page.dart';
 import '../notification/notification_provider.dart';
 
 
