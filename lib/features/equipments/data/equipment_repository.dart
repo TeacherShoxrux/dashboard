@@ -4,6 +4,7 @@ import '../../../network/model_response.dart';
 import '../../../network/response_base.dart';
 import '../../cart/components/equipment_autocomplete.dart';
 import '../../cart/equipment_search.dart';
+import '../domain/models/brand_model.dart';
 import '../domain/models/equipment_model.dart';
 import 'equipment_service.dart';
 
@@ -22,6 +23,18 @@ class EquipmentRepository extends BaseRepository {
           final list = json as List<dynamic>;
 
           return list.map((item) => EquipmentModel.fromJson(item as Map<String, dynamic>)).toList();
+        }
+    );
+  }
+
+  Future<Result<BaseResponse<List<BrandModel>>>> getBrands() async {
+
+    return safeApiCall(
+          () => _equipmentService.getBrand(),
+            (json) {
+          if (json == null) return <BrandModel>[];
+          final list = json as List<dynamic>;
+          return list.map((item) => BrandModel.fromJson(item as Map<String, dynamic>)).toList();
         }
     );
   }

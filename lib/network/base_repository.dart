@@ -3,8 +3,6 @@ import 'package:chopper/chopper.dart';
 import 'model_response.dart';
 import 'dart:developer' as dev;
 abstract class BaseRepository {
-  /// [safeApiCall] - API so'rovlarini xavfsiz bajarish va [Result]ga o'rash uchun.
-  /// [T] - Bu biz kutayotgan Model tipi (masalan, Equipment).
   Future<Result<BaseResponse<T>>> safeApiCall<T>(
       Future<Response> Function() call,
       T Function(dynamic) mapper,
