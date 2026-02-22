@@ -29,7 +29,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     required this.loader,
     required this.notify,
   });
-
+  List<String> imageList=[];
   List<EquipmentModel> equipments = [];
   List<BrandModel> brands = [];
   List<CategoryModel> category = [];
@@ -201,7 +201,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     }
   }
 
-  Future<void> pickEquipmentImage() async {
+  Future<String?> pickEquipmentImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: true,
@@ -211,40 +211,38 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       PlatformFile file = result.files.first;
       pickedFileBytes = file.bytes; // Web-da fayl mana shu bytes ichida bo'ladi
       pickedFileName = file.name;
-      notifyListeners(); // UI-ni yangilash
-      uploadEquipmentImage(pickedFileBytes!, pickedFileName!);
-    } else {
-
+      return await uploadEquipmentImage(pickedFileBytes!, pickedFileName!);
     }
+    return null;
   }
 
-  Future<void> uploadEquipmentImage(
-      Uint8List fileBytes, String fileName) async {
+  Future<String?> uploadEquipmentImage(Uint8List fileBytes, String fileName) async {
     loader.setLoading(true);
     try {
       final multipartFile = http.MultipartFile.fromBytes(
-        'file', // Swagger-dagi nom bilan bir xil bo'lishi shart!
+        'file',
         fileBytes,
         filename: fileName,
       );
 
       final response = await safeApiCall<String>(
           () => api.uploadFile(multipartFile), (data) => data.toString());
-
       if (response is Success) {
-        notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success);
-        imagePath = (response as Success).value.data!;
+       imagePath = (response as Success).value.data!;
+        notify.show("Muvaffaqiyatli yuklandi! \n $imagePath", type: NotificationType.success);
+       loader.setLoading(false);
+       return imagePath;
       } else {
-        // 400 xato bo'lsa, serverdan kelgan xabarni ko'ramiz
         notify.show("Server rad etdi: ${response}",
             type: NotificationType.error);
+
+        return null;
       }
     } catch (e) {
       // "Failed to fetch" xatosi shu yerda ushlanadi
       notify.show("Aloqa xatosi: CORS yoki Tarmoq muammosi",
           type: NotificationType.error);
-    } finally {
-      loader.setLoading(false);
+      return null;
     }
   }
 }
