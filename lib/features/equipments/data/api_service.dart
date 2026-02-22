@@ -27,7 +27,7 @@ abstract class ApiService extends ChopperService {
   Future<Response> uploadFile(@PartFile('file') http.MultipartFile file);
 
   @POST(path: '/Equipments/brands')
-  Future<Response> createBrand();
+  Future<Response> createBrand(@Query("Name") String name, @Query("Details") String description,[ @Query("ImageUrl") String? imagePath]);
 
   @GET(path: '/Equipments/categories')
   Future<Response> getCategories();

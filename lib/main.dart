@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'constants.dart';
 import 'controllers/menu_app_controller.dart';
+import 'core/custom_scroll.dart';
 import 'core/loading/global_loader_widget.dart';
 import 'core/notification/notification_service.dart';
 import 'core/router/app_routes.dart';
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+        scrollBehavior: CustomScrollBehavior(),
       debugShowCheckedModeBanner: false,
       title: 'Flutter Admin Panel',
       theme: ThemeData.dark().copyWith(
