@@ -1,4 +1,5 @@
 import 'package:admin/features/equipments/domain/models/brand_model.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +61,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(color: Colors.blue.shade100),
                         ),
-                        child: equipmentProvider.pickedFileBytes != null
+                        child: equipmentProvider.imagePath != null
                             ? null
                             : const Icon(Icons.add_photo_alternate_outlined,
                                 size: 40, color: Colors.blue),
@@ -78,7 +79,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                             onPressed: () {
                               context
                                   .read<EquipmentProvider>()
-                                  .pickEquipmentImage();
+                                  .pickEquipmentImage(FileType.image);
                             },
                           ),
                         ),
@@ -97,24 +98,6 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                 const Text("Tegishli brend",
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                // DropdownButtonFormField<BrandModel>(
-                //   value: selectedBrand,
-                //   decoration: InputDecoration(
-                //     prefixIcon: const Icon(Icons.business, color: Colors.orange),
-                //     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                //     hintText: "Brendni tanlang",
-                //   ),
-                //   items: equipmentProvider.brands.map((brand) {
-                //     return DropdownMenuItem<BrandModel>(
-                //       value: brand,
-                //       child: Text(brand.name),
-                //     );
-                //   }).toList(),
-                //   onChanged: (value) => setState(() => selectedBrand = value),
-                //   validator: (value) => value == null ? "Brendni tanlash shart" : null,
-                // ),
-                // const SizedBox(height: 20),
-
                 // 3. KATEGORIYA NOMI
                 const Text("Kategoriya nomi",
                     style: TextStyle(fontWeight: FontWeight.bold)),

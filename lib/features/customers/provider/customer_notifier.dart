@@ -39,9 +39,10 @@ Future<void> getAllCustomers({String? search , int page = 1, int size = 20}) asy
   loader.setLoading(false);
   notifyListeners();
 }
-Future<void> addCustomer(CustomerCreateModel body) async {
-  loader.setLoading(true);
+Future<bool?> addCustomer(CustomerCreateModel body) async {
+
  try{
+   loader.setLoading(true);
    final response = await safeApiCall(
            () => api.createCustomer(body.toJson()), (json) {
      final items =
@@ -50,9 +51,13 @@ Future<void> addCustomer(CustomerCreateModel body) async {
    });
    if (response is Success) {
      customers = (response as Success).value.data!;
+     return true;
    } else {
      notify.show("Server xatosi: ${response}", type: NotificationType.error);
    }
- }catch(e){}
+ }catch(e){
+   loader.setLoading(true);
+ }
+ return null;
 }
 }

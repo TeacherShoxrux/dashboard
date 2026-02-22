@@ -1,4 +1,11 @@
+import 'package:admin/core/custom_field.dart';
+import 'package:admin/network/api_constants.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../../core/widgets/file_priveiw_widget.dart';
+import '../../../core/widgets/file_uploader.dart';
 
 class AddCustomerDialog extends StatefulWidget {
   const AddCustomerDialog({Key? key}) : super(key: key);
@@ -32,10 +39,20 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   // Ma'lumotlar holati
   String gender = "Erkak";
   bool hasPassport = true;
-  DateTime? birthDate;
+  DateTime? dateOfBirth;
 
   var passportType = "Oddiy";
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final passportSeriesNumController = TextEditingController();
 
+  final jshshirController = TextEditingController();
+  final noteController = TextEditingController();
+  final addressController = TextEditingController();
+  var isWoman = false;
+  final isOriginalDocumentLeft = false;
+  final List<String> files=[];
+  String? image;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -57,23 +74,28 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. ASOSIY MA'LUMOTLAR
                 Row(
                   children: [
-                    Expanded(child: _buildField("Ism", Icons.person)),
+                    Expanded(
+                        child: CustomTextField(
+                            label: "Ism",
+                            controller: firstNameController,
+                            icon: Icons.person)),
                     const SizedBox(width: 15),
                     Expanded(
-                        child: _buildField("Familiya", Icons.person_outline)),
+                        child: CustomTextField(
+                            label: "Familiya",
+                            controller: lastNameController,
+                            icon: Icons.person_outline)),
                   ],
                 ),
                 const SizedBox(height: 15),
 
-                // 2. JINSI VA PASSPORT HOLATI
                 Row(
                   children: [
                     Expanded(
                       child: _buildDropdown("Jinsi", ["Erkak", "Ayol"],
-                          (val) => setState(() => gender = val!)),
+                          (val) => setState(() => isWoman = "Ayol" == val)),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
@@ -104,22 +126,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     ),
                   ],
                 ),
-
-                // 3. JSHSHIR VA PASSPORT SERIYA
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Expanded(
-                        child: _buildField("JSHSHIR", Icons.numbers,
-                            isNumber: true)),
-                    const SizedBox(width: 15),
-                    Expanded(
-                        child: _buildField(
-                            "Passport Seriya va Raqam", Icons.badge)),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
+                // const SizedBox(height: 15),
                 Row(
                   children: [
                     Expanded(
@@ -150,35 +157,21 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       ),
                     ),
                     const SizedBox(width: 15),
-                    // Agar Zagran bo'lsa, qo'shimcha field chiqadi, aks holda JSHSHIR turadi
-                    Expanded(
-                      child: passportType == "Zagran"
-                          ? _buildField("Passport haqida (Qo'shimcha)",
-                              Icons.info_outline)
-                          : _buildField("JSHSHIR", Icons.numbers,
-                              isNumber: true),
-                    ),
+
                   ],
                 ),
-
-                // 4. PASSPORT SERIYA VA RAQAM (Alohida qatorda yoki yonida)
                 const SizedBox(height: 15),
                 Row(
                   children: [
-                    // Agar tepada JSHSHIRni zagranga almashtirgan bo'lsak, bu yerda JSHSHIRni ko'rsatish mumkin
-                    if (passportType == "Zagran")
                       Expanded(
-                          child: _buildField("JSHSHIR", Icons.numbers,
-                              isNumber: true)),
-                    if (passportType == "Zagran") const SizedBox(width: 15),
+                          child: CustomTextField(label: "JSHSHIR",icon:  Icons.numbers)),
+                    SizedBox(width: 15),
 
                     Expanded(
-                        child: _buildField(
-                            "Passport Seriya va Raqam", Icons.badge)),
+                        child:CustomTextField(label:
+                            "Passport Seriya va Raqam",icon:  Icons.badge)),
                   ],
                 ),
-
-                // 4. TUG'ILGAN KUN VA INVITE ID
                 const SizedBox(height: 15),
                 Row(
                   children: [
@@ -187,8 +180,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     ),
                     const SizedBox(width: 15),
                     Expanded(
-                        child: _buildField(
-                            "Taklif qilgan odam", Icons.card_giftcard)),
+                        child: CustomTextField(
+                          label:
+                            "Taklif qilgan odam",icon:  Icons.card_giftcard)),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -212,9 +206,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                        child: _buildField(
-                            "O'zining telefon raqami", Icons.phone,
-                            hint: "+998")),
+                        child: CustomTextField(
+                          label:
+                            "O'zining telefon raqami", icon:  Icons.phone)),
                     IconButton(
                       icon: const Icon(Icons.remove_circle_outline,
                           color: Colors.red),
@@ -235,7 +229,6 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                         padding: const EdgeInsets.only(bottom: 10),
                         child: Row(
                           children: [
-                            // Kimga tegishliligi (Akasi, do'sti...)
                             SizedBox(
                               width: 120,
                               child: TextFormField(
@@ -252,10 +245,10 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                             const SizedBox(width: 10),
                             // Telefon raqami
                             Expanded(
-                              child: _buildField(
+                              child: CustomTextField(
+                                label:
                                 "Telefon raqami",
-                                Icons.phone_android,
-                                hint: "+998",
+                              icon:   Icons.phone_android,
                                 // controller: extraPhones[index].controller, // Controllerni bog'laysiz
                               ),
                             ),
@@ -281,16 +274,56 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                 ),
 
                 const SizedBox(height: 15),
-                _buildField("Details (Batafsil ma'lumot)", Icons.description,
+                CustomTextField(label: "Details (Batafsil ma'lumot)",icon:  Icons.description,
                     maxLines: 2),
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _buildUploadButton(Icons.add_a_photo, "User Photo"),
-                    _buildUploadButton(Icons.file_copy, "Documents (PDF/JPG)"),
+
+                    if(image==null)FileUploader(
+                      icon: Icon(Icons.add_a_photo,),
+                      type: FileType.image,
+                      label: "User Photo",
+                      uploader: (String filePath) {
+                        image=filePath;
+                        setState(() {
+
+                        });
+                      },),
+                    if(image!=null)FilePreviewCard(fileName: image!, localPath:ApiConstants.baseUrl+image!, onRemove: () { image=null;setState(() {
+                    }); },),
+
                   ],
                 ),
+                SizedBox(height: 10,),
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: files.length+1,
+                    itemBuilder: (context, index) {
+                      if (index == files.length) {
+                        return FileUploader(
+                          type: FileType.any,
+                          uploader: (String filePath) {
+                            files.add(filePath);
+                            setState(() {
+
+                            });
+                            },);
+                      }
+                      final file = files[index];
+                      return FilePreviewCard(
+                        fileName: file,
+                        localPath:ApiConstants.baseUrl+ file, // Agar endi tanlangan bo'lsa
+                        onRemove: () {
+                          setState(() => files.removeAt(index));
+                        },
+                      );
+                    },
+                  ),
+                )
               ],
             ),
           ),
@@ -354,7 +387,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           firstDate: DateTime(1950),
           lastDate: DateTime.now(),
         );
-        if (picked != null) setState(() => birthDate = picked);
+        if (picked != null) setState(() => dateOfBirth = picked);
       },
       child: InputDecorator(
         decoration: InputDecoration(
@@ -363,9 +396,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           prefixIcon: const Icon(Icons.calendar_today, size: 20),
           isDense: true,
         ),
-        child: Text(birthDate == null
+        child: Text(dateOfBirth == null
             ? "Tanlang"
-            : "${birthDate!.day}.${birthDate!.month}.${birthDate!.year}"),
+            : "${dateOfBirth!.day}.${dateOfBirth!.month}.${dateOfBirth!.year}"),
       ),
     );
   }

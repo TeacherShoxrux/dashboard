@@ -97,8 +97,6 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     notifyListeners();
   }
 
-  Uint8List? pickedFileBytes;
-  String? pickedFileName;
   Future<bool> addCategory(int brandId,String name, String description,
       [String? imagePath = null]) async {
     try{
@@ -201,9 +199,12 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     }
   }
 
-  Future<String?> pickEquipmentImage() async {
+  Future<String?> pickEquipmentImage(FileType type) async {
+
+    Uint8List? pickedFileBytes;
+    String? pickedFileName;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
+      type: type,
       withData: true,
     );
 
@@ -235,7 +236,6 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       } else {
         notify.show("Server rad etdi: ${response}",
             type: NotificationType.error);
-
         return null;
       }
     } catch (e) {

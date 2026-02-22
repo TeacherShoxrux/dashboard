@@ -14,13 +14,11 @@ class ImageListPicker extends StatefulWidget {
 }
 
 class _ImageListPickerState extends State<ImageListPicker> {
-  final List<PlatformFile> _selectedFiles = [];
-
   @override
   Widget build(BuildContext context) {
     final equipmentProvider = Provider.of<EquipmentProvider>(context);
     return SizedBox(
-      height: 100, // Vidjet balandligi
+      height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -29,10 +27,9 @@ class _ImageListPickerState extends State<ImageListPicker> {
           if (index == equipmentProvider.imageList.length) {
             return GestureDetector(
               onTap: () async {
-                var res = await equipmentProvider.pickEquipmentImage();
+                var res = await equipmentProvider.pickEquipmentImage(FileType.image);
                 if (res != null) {
                   print(res);
-
                   equipmentProvider.imageList.add(res);
                   print(equipmentProvider.imageList);
                   setState(() {});

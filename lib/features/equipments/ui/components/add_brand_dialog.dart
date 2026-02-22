@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +61,7 @@ class _AddBrandDialogState extends State<AddBrandDialog> {
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(color: Colors.blue.shade100),
                         ),
-                        child: equipmentProvider.pickedFileBytes != null
+                        child: equipmentProvider.imagePath != null
                             ? null
                             : const Icon(Icons.add_photo_alternate_outlined,
                                 size: 40, color: Colors.blue),
@@ -78,7 +79,7 @@ class _AddBrandDialogState extends State<AddBrandDialog> {
                             onPressed: () {
                               context
                                   .read<EquipmentProvider>()
-                                  .pickEquipmentImage();
+                                  .pickEquipmentImage(FileType.image);
                             },
                           ),
                         ),
