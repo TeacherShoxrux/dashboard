@@ -99,6 +99,32 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
 
   Uint8List? pickedFileBytes;
   String? pickedFileName;
+  Future<bool> addCategory(int brandId,String name, String description,
+      [String? imagePath = null]) async {
+    try{
+      loader.setLoading(true);
+    final response = await safeApiCall(
+            () => api.createCategory(brandId,name, description, imagePath),
+            (data) => data.toString());
+    if (response is Success) {
+      notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
+      loader.setLoading(false);
+      imagePath=null;
+      return true;
+    } else {
+      notify.show("Server rad etdi: ${response}",
+          type: NotificationType.error,duration: Duration(seconds: 1));
+      loader.setLoading(false);
+      return false;
+    }
+    } catch (e) {
+      notify.show("Xatolik yuz berdi: ${e}",
+          type: NotificationType.error,duration: Duration(seconds: 1));
+      loader.setLoading(false);
+      return false;
+    }
+  }
+
   Future<bool> addBrand(String brandName, String description,
       [String? imagePath = null]) async {
     try {
@@ -108,7 +134,56 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
               (data) => data.toString());
       if (response is Success) {
         notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
-        imagePath = (response as Success).value.data!;
+        imagePath=null;
+        loader.setLoading(false);
+        return true;
+      } else {
+
+        notify.show("Server rad etdi: ${response}",
+            type: NotificationType.error,duration: Duration(seconds: 1));
+        loader.setLoading(false);
+        return false;
+      }
+    } catch (e) {
+      notify.show("Xatolik yuz berdi: ${e}",
+          type: NotificationType.error,duration: Duration(seconds: 1));
+      loader.setLoading(false);
+      return false;
+    }
+  }
+  Future<bool> addEquipment({
+    required String name,
+    required int brandId,
+    required int categoryId,
+    required int quantity,
+    required String model,
+    required String description,
+    required double pricePerDay,
+    required double replacementValue,
+    required bool isMainProduct,
+    required bool hasAccessories,
+    List<String>? images
+  }) async {
+    try {
+      loader.setLoading(true);
+      final response = await safeApiCall(
+          () => api.createEquipment({
+            "name": name,
+            "brandId": categoryId,
+            "categoryId": categoryId,
+            "quantity": quantity,
+            "model": model,
+            "description": description,
+            "pricePerDay": pricePerDay,
+            "replacementValue": replacementValue,
+            "isMainProduct": isMainProduct,
+            "hasAccessories": hasAccessories,
+            "images": images
+          }),
+              (data) => data.toString());
+      if (response is Success) {
+        notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
+        imagePath=null;
         loader.setLoading(false);
         return true;
       } else {

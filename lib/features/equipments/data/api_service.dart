@@ -29,6 +29,9 @@ abstract class ApiService extends ChopperService {
   @POST(path: '/Equipments/brands')
   Future<Response> createBrand(@Query("Name") String name, @Query("Details") String description,[ @Query("ImageUrl") String? imagePath]);
 
+  @POST(path: '/Equipments/categories')
+  Future<Response> createCategory(@Query("BrandId") int brandId,@Query("Name") String name, [@Query("Details") String? description, @Query("Image") String? imagePath]);
+
   @GET(path: '/Equipments/categories')
   Future<Response> getCategories();
 
@@ -37,6 +40,9 @@ abstract class ApiService extends ChopperService {
 
   @POST(path: '/Equipments/categories')
   Future<Response> createCategories();
+
+  @POST(path: '/Equipments')
+  Future<Response> createEquipment(@Body() Map<String, dynamic> body);
 
   @POST()
   Future<Response> addEquipment(@Body() Map<String, dynamic> body);

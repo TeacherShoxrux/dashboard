@@ -16,8 +16,6 @@ class ProductSelectionScreen extends StatefulWidget {
 }
 
 class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
-
-
   final TextEditingController _searchController = TextEditingController();
 
   final Map<String, List<Map<String, String>>> categories = {
@@ -33,75 +31,68 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
       context.read<EquipmentProvider>().init();
     });
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<EquipmentProvider>();
     return Scaffold(
-        body: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: "Mahsulotlarni izlash...",
-                                prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                filled: true,
-                                fillColor: Colors.grey[100],
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 0), // Balandlikni muvozanatlash
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12), // Oradagi masofa
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => const AddProductDialog(),
-                              );
-                            },
-                            icon: const Icon(Icons.add_box),
-                            label: const Text("Mahsulot qo'shish"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 18),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                          ),
-                        ],
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: "Mahsulotlarni izlash...",
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0), // Balandlikni muvozanatlash
                       ),
                     ),
                   ),
-
-                  BrandsWidget(),
-
-
-                  // SliverToBoxAdapter(),
-
-                  // 3. KATEGORIYALAR (Horizontal Scroll)
-                  if(provider.selectedBrand != null)
-                    CategoryWidget(),
-
-                  // 4. MAHSULOTLAR (Grid View)
-                  Consumer<EquipmentProvider>(
-                      builder:(context,state,child)=> SliverPadding(
+                  const SizedBox(width: 12), // Oradagi masofa
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const AddProductDialog(),
+                      );
+                    },
+                    icon: const Icon(Icons.add_box),
+                    label: const Text("Mahsulot qo'shish"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          BrandsWidget(),
+          if (provider.selectedBrand != null) CategoryWidget(),
+          Consumer<EquipmentProvider>(
+              builder: (context, state, child) => SliverPadding(
                     padding: EdgeInsets.all(16),
                     sliver: SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -117,13 +108,11 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                               "${provider.equipments[index].brandName} / ${provider.equipments[index].categoryName}",
                           price: "${provider.equipments[index].pricePerDay}",
                         );
-                      }, childCount: provider.equipments.length
-                          ),
+                      }, childCount: provider.equipments.length),
                     ),
                   )),
-                ],
-              ),
+        ],
+      ),
     );
-
   }
 }
