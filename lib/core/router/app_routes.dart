@@ -3,14 +3,13 @@ import 'package:admin/features/cart/cart_page.dart';
 import 'package:admin/features/damaged_items/damaged_items_page.dart';
 import 'package:admin/features/employee/employee_page.dart';
 import 'package:admin/features/login/login_page.dart';
-
 import 'package:admin/features/profile/profile_page.dart';
 import 'package:admin/features/rent/rent_page.dart';
 import 'package:admin/features/rented_list/rented_list_page.dart';
 import 'package:admin/features/reports/reports_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../features/customers/customers_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/main_layout/main_layout.dart';
@@ -34,11 +33,10 @@ class AppRoutes {
   static const String account = '/account';
 
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
- static final goRouterProvider = Provider<GoRouter>((ref) {
-    return GoRouter(
+ static final goRouter =GoRouter(
 
       initialLocation: login,
-      navigatorKey: ref.watch(rootNavigatorKeyProvider),
+      navigatorKey: rootNavigatorKey,
       debugLogDiagnostics: true,
       routes: [
 
@@ -64,7 +62,6 @@ class AppRoutes {
         ),
       ],
     );
-  });
   static StatefulShellBranch _buildBranch(String path, Widget screen) {
     return StatefulShellBranch(
       routes: [

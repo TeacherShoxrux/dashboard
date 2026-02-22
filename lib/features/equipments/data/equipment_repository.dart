@@ -1,22 +1,22 @@
 
+import 'package:admin/features/equipments/data/api_service.dart';
+
 import '../../../network/base_repository.dart';
 import '../../../network/model_response.dart';
 import '../../../network/response_base.dart';
-import '../../cart/components/equipment_autocomplete.dart';
-import '../../cart/equipment_search.dart';
 import '../domain/models/brand_model.dart';
+import '../domain/models/category_model.dart';
 import '../domain/models/equipment_model.dart';
-import 'equipment_service.dart';
 
-class EquipmentRepository extends BaseRepository {
-  final EquipmentService _equipmentService;
+
+class EquipmentRepository with BaseRepository{
+  final ApiService _equipmentService;
 
   EquipmentRepository(this._equipmentService);
 
-  // 1. Barcha uskunalar ro'yxatini olish (Pagination bilan)
   Future<Result<BaseResponse<List<EquipmentModel>>>> getEquipments() async {
 
-    return safeApiCall(
+    var re=await safeApiCall<List<EquipmentModel>>(
           () => _equipmentService.getEquipments(),
             (json) {
           if (json == null) return <EquipmentModel>[];
@@ -24,7 +24,10 @@ class EquipmentRepository extends BaseRepository {
 
           return list.map((item) => EquipmentModel.fromJson(item as Map<String, dynamic>)).toList();
         }
+
     );
+
+    return re;
   }
 
   Future<Result<BaseResponse<List<BrandModel>>>> getBrands() async {
@@ -35,6 +38,17 @@ class EquipmentRepository extends BaseRepository {
           if (json == null) return <BrandModel>[];
           final list = json as List<dynamic>;
           return list.map((item) => BrandModel.fromJson(item as Map<String, dynamic>)).toList();
+        }
+    );
+  }
+  Future<Result<BaseResponse<List<CategoryModel>>>> getCategories(int id) async {
+
+    return safeApiCall(
+          () => _equipmentService.getByBrandIdCategories(id),
+            (json) {
+          if (json == null) return <CategoryModel>[];
+          final list = json as List<dynamic>;
+          return list.map((item) => CategoryModel.fromJson(item as Map<String, dynamic>)).toList();
         }
     );
   }

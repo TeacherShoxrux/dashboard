@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../network/api_constants.dart';
+import '../providers/repository_provider.dart';
 
 class AddBrandDialog extends StatefulWidget {
   const AddBrandDialog({Key? key}) : super(key: key);
@@ -14,6 +18,7 @@ class _AddBrandDialogState extends State<AddBrandDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final equipmentProvider=Provider.of<EquipmentProvider>(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Row(
@@ -39,15 +44,21 @@ class _AddBrandDialogState extends State<AddBrandDialog> {
                 Center(
                   child: Stack(
                     children: [
-                      Container(
+
+                        Container(
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
+                          image: equipmentProvider.imagePath!=null? DecorationImage(
+                            image: NetworkImage(ApiConstants.baseUrl+equipmentProvider.imagePath!),
+                            fit: BoxFit.cover,
+                          ):null,
                           color: Colors.blue[50],
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(color: Colors.blue.shade100),
                         ),
-                        child: const Icon(Icons.add_photo_alternate_outlined,
+                        child:equipmentProvider.pickedFileBytes!=null?null:
+                        const Icon(Icons.add_photo_alternate_outlined,
                             size: 40, color: Colors.blue),
                       ),
                       Positioned(
@@ -60,7 +71,8 @@ class _AddBrandDialogState extends State<AddBrandDialog> {
                             padding: EdgeInsets.zero,
                             icon: const Icon(Icons.add, color: Colors.white, size: 20),
                             onPressed: () {
-                              // Logo yuklash logikasi
+                              context.read<EquipmentProvider>().pickEquipmentImage();
+
                             },
                           ),
                         ),

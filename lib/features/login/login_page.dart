@@ -1,20 +1,12 @@
-import 'package:admin/core/notification/top_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/loading/global_loading_notifier.dart';
-import '../../core/notification/notification_provider.dart';
+import 'package:provider/provider.dart';
+import '../../core/loading/global_loader_widget.dart';
+import '../../core/notification/notification_service.dart';
 import '../../core/router/app_routes.dart';
-import '../main_layout/main_layout.dart';
 
-// class LoginPage extends StatefulWidget {
-//   const LoginPage({Key? key}) : super(key: key);
-//
-//   @override
-//   _LoginPageState createState() => _LoginPageState();
-// }
 
-class LoginPage extends ConsumerWidget {
+class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -25,7 +17,7 @@ class LoginPage extends ConsumerWidget {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.grey[100],
       body: Center(
@@ -136,13 +128,14 @@ class LoginPage extends ConsumerWidget {
                     height: 50,
                     child: ElevatedButton(
                         onPressed: () async {
-                          final loading = ref.read(globalLoadingProvider.notifier);
-                          loading.show();
-                          await Future.delayed(const Duration(seconds: 2));
-                          loading.hide();
-                          ref.read(notificationServiceProvider)
-                              .show("Muvaffaqiyatli kirdinggiz",type: NotificationType.success);
-                          await Future.delayed(const Duration(seconds: 1));
+                          // final loading = ref.read(globalLoadingProvider.notifier);
+                         Provider.of<NotificationProvider>(context,listen: false).show("message");
+                         //  await Future.delayed(const Duration(seconds: 2));
+                         // Provider.of<GlobalLoadingProvider>(context,listen: false).setLoading(false);
+                          // // loading.hide();
+                          // ref.read(notificationServiceProvider)
+                          //     .show("Muvaffaqiyatli kirdinggiz",type: NotificationType.success);
+                          // await Future.delayed(const Duration(seconds: 1));
                           context.go(AppRoutes.dashboard);
                           },
                       style: ElevatedButton.styleFrom(

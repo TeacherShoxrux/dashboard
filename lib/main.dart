@@ -1,13 +1,20 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pretty_chopper_logger/pretty_chopper_logger.dart';
 import 'package:provider/provider.dart';
 
 import 'constants.dart';
 import 'controllers/menu_app_controller.dart';
 import 'core/loading/global_loader_widget.dart';
+import 'core/notification/notification_service.dart';
 import 'core/router/app_routes.dart';
+import 'features/equipments/data/api_service.dart';
+import 'features/equipments/ui/providers/repository_provider.dart';
+import 'network/api_constants.dart';
+import 'network/auth_iterceptor.dart';
+import 'network/result_converter.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,19 +25,51 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => MenuAppController(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => GlobalLoadingProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => NotificationProvider(AppRoutes.rootNavigatorKey),
+        ),
+        Provider<ChopperClient>(
+          create: (_) => ChopperClient(
+            baseUrl: Uri.parse(ApiConstants.baseUrl),
+            services: [
+              ApiService.create(), // Sizning generatsiya qilingan servisingiz
+            ],
+            converter: ResultConverter(), // Kelayotgan JSON-ni modelga o'giradi
+            interceptors: [
+              AuthInterceptor(),
+              PrettyChopperLogger(),
+            ],
+          ),
+        ),
+        ProxyProvider<ChopperClient, ApiService>(
+          update: (context, client, previous) => client.getService<ApiService>(),
+        ),
+
+        ChangeNotifierProxyProvider3<ApiService, GlobalLoadingProvider, NotificationProvider, EquipmentProvider>(
+          create: (context) => EquipmentProvider(
+            api: context.read<ApiService>(),
+            loader: context.read<GlobalLoadingProvider>(),
+            notify: context.read<NotificationProvider>(),
+          ),
+          update: (context, api, loader, notify, previous) =>
+             previous?? EquipmentProvider(api: api, loader: loader, notify: notify),
+        ),
       ],
-      child: ProviderScope(
-        child: MyApp(),
-      ),
+
+      child:  MyApp(),
+
     ),
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
+  // final rootNavigatorKeyProvider = GlobalKey<NavigatorState>();
   @override
-  Widget build(BuildContext context,ref) {
+  Widget build(BuildContext context) {
     return MaterialApp.router(
-
       debugShowCheckedModeBanner: false,
       title: 'Flutter Admin Panel',
       theme: ThemeData.dark().copyWith(
@@ -39,7 +78,7 @@ class MyApp extends ConsumerWidget {
             .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      routerConfig:ref.read(AppRoutes.goRouterProvider),
+      routerConfig:AppRoutes.goRouter,
       builder: (context, child) {
         return   GlobalLoader(
             child: child!,

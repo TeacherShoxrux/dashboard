@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'top_notification.dart';
 
-class NotificationService {
+class NotificationProvider extends ChangeNotifier {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  NotificationService(this.navigatorKey);
+  NotificationProvider(this.navigatorKey);
 
   void show(
       String message, {

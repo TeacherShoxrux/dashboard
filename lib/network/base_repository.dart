@@ -2,7 +2,7 @@ import 'package:admin/network/response_base.dart';
 import 'package:chopper/chopper.dart';
 import 'model_response.dart';
 import 'dart:developer' as dev;
-abstract class BaseRepository {
+mixin BaseRepository {
   Future<Result<BaseResponse<T>>> safeApiCall<T>(
       Future<Response> Function() call,
       T Function(dynamic) mapper,
@@ -15,11 +15,8 @@ abstract class BaseRepository {
 
       if (response.body is Success) {
         final Map<String, dynamic> rawJson = (response.body as Success).value;
-
-        // BaseResponse ichidagi mapper aynan Modelni (T) yaratish uchun xizmat qiladi
         final apiResponse = BaseResponse<T>.fromJson(
-          rawJson,
-              (data) => mapper(data), // Bu yerda mapper(data) - EquipmentModel.fromJson()
+          rawJson,(data) => mapper(data), // Bu yerda mapper(data) - EquipmentModel.fromJson()
         );
 
         return Success(apiResponse);
