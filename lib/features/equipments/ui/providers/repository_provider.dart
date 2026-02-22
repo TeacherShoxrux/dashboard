@@ -162,7 +162,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     required double replacementValue,
     required bool isMainProduct,
     required bool hasAccessories,
-    List<String>? images
+    String? image
   }) async {
     try {
       loader.setLoading(true);
@@ -178,16 +178,16 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
             "replacementValue": replacementValue,
             "isMainProduct": isMainProduct,
             "hasAccessories": hasAccessories,
-            "images": images
+            "image": image
           }),
               (data) => data.toString());
       if (response is Success) {
         notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
         imagePath=null;
+        imageList.clear();
         loader.setLoading(false);
         return true;
       } else {
-
         notify.show("Server rad etdi: ${response}",
             type: NotificationType.error,duration: Duration(seconds: 1));
         loader.setLoading(false);

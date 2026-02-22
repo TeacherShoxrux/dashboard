@@ -11,6 +11,7 @@ import 'core/custom_scroll.dart';
 import 'core/loading/global_loader_widget.dart';
 import 'core/notification/notification_service.dart';
 import 'core/router/app_routes.dart';
+import 'features/customers/provider/customer_notifier.dart';
 import 'features/equipments/data/api_service.dart';
 import 'features/equipments/ui/providers/repository_provider.dart';
 import 'network/api_constants.dart';
@@ -57,6 +58,15 @@ void main() {
           ),
           update: (context, api, loader, notify, previous) =>
              previous?? EquipmentProvider(api: api, loader: loader, notify: notify),
+        ),
+        ChangeNotifierProxyProvider3<ApiService, GlobalLoadingProvider, NotificationProvider, CustomerNotifierProvider>(
+          create: (context) => CustomerNotifierProvider(
+            api: context.read<ApiService>(),
+            loader: context.read<GlobalLoadingProvider>(),
+            notify: context.read<NotificationProvider>(),
+          ),
+          update: (context, api, loader, notify, previous) =>
+             previous?? CustomerNotifierProvider(api: api, loader: loader, notify: notify),
         ),
       ],
 

@@ -1,15 +1,20 @@
+import 'package:admin/network/api_constants.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../core/constants.dart';
 
 class ProductCard extends StatefulWidget {
   final String name;
   final String subName;
   final String price;
+  final String? img;
+
 
   const ProductCard({
     Key? key,
     required this.name,
     required this.subName,
-    required this.price,
+    required this.price, this.img,
   }) : super(key: key);
 
   @override
@@ -33,7 +38,7 @@ class _ProductCardState extends State<ProductCard> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    image: DecorationImage(image: NetworkImage("https://picsum.photos/200/300",),fit: BoxFit.cover),
+                    image: DecorationImage(image: NetworkImage("${ApiConstants.baseUrl}${widget.img}"),fit: BoxFit.cover),
                     color: Colors.grey[200],
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                   ),

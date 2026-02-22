@@ -11,6 +11,7 @@ part 'api_service.chopper.dart';
 
 @ChopperApi(baseUrl: '/api') // .NET Controller manzili
 abstract class ApiService extends ChopperService {
+  //---------------------Equipment,brand,category---------------------------------------------------------------------
   @GET(path: '/Equipments')
   Future<Response<dynamic>> getEquipments(
       {@Query('BrandId') int? brandId,
@@ -22,7 +23,7 @@ abstract class ApiService extends ChopperService {
   @GET(path: '/Equipments/brands')
   Future<Response> getBrand();
 
-  @Post(path: '/Files/upload')
+  @POST(path: '/Files/upload')
   @Multipart()
   Future<Response> uploadFile(@PartFile('file') http.MultipartFile file);
 
@@ -43,9 +44,12 @@ abstract class ApiService extends ChopperService {
 
   @POST(path: '/Equipments')
   Future<Response> createEquipment(@Body() Map<String, dynamic> body);
+//---------------------Customer-------------------------------------------------------------------------------------
+  @GET(path: '/Customers')
+  Future<Response> getAllCustomers({@Query('search') String? search, @Query('page')int? page=1, @Query('size') int? size=20});
 
-  @POST()
-  Future<Response> addEquipment(@Body() Map<String, dynamic> body);
+  @POST(path: '/Customers')
+  Future<Response> createCustomer(@Body() Map<String, dynamic> body);
 
   static ApiService create([ChopperClient? client]) {
     return _$ApiService(client);

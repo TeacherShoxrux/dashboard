@@ -17,13 +17,6 @@ class ProductSelectionScreen extends StatefulWidget {
 
 class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  final Map<String, List<Map<String, String>>> categories = {
-    "Apple": [
-      {"name": "iPhone", "img": "https://img.com/iphone.png"},
-      {"name": "MacBook", "img": "https://img.com/mac.png"},
-    ],
-  };
   @override
   void initState() {
     super.initState();
@@ -66,11 +59,15 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                   ),
                   const SizedBox(width: 12), // Oradagi masofa
                   ElevatedButton.icon(
-                    onPressed: () {
-                      showDialog(
+                    onPressed: ()async{
+                    var result= await showDialog(
                         context: context,
                         builder: (context) => const AddProductDialog(),
                       );
+                    if(result==true){
+                      await Future.delayed(Duration(seconds: 1));
+                      provider.getAllEquipments(categoryId: provider.selectedCategory?.id);
+                    }
                     },
                     icon: const Icon(Icons.add_box),
                     label: const Text("Mahsulot qo'shish"),
@@ -103,6 +100,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return ProductCard(
+                          img:  provider.equipments[index].imageUrl,
                           name: provider.equipments[index].name,
                           subName:
                               "${provider.equipments[index].brandName} / ${provider.equipments[index].categoryName}",

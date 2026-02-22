@@ -65,6 +65,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     Expanded(
                         flex: 2,
                         child: CustomTextField(
+                          validator: (txt) => AppValidators.required(
+                              txt, "Mahsulot nomi kiriting"),
                           label: "Mahsulot nomi",
                           icon: Icons.inventory_2,
                           controller: nameController,
@@ -73,6 +75,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     Expanded(
                         flex: 1,
                         child: CustomTextField(
+                          validator: (txt) =>
+                              AppValidators.required(txt, "SKU kiriting"),
                           label: "ID / SKU",
                           icon: Icons.qr_code,
                           controller: modelController,
@@ -86,6 +90,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         flex: 2,
                         child: CustomTextField(
                           label: "Ijara narxi(kunlik)",
+                          validator: AppValidators.price,
                           icon: Icons.price_change,
                           controller: pricePerDayController,
                           formatters: [
@@ -98,6 +103,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     Expanded(
                         flex: 1,
                         child: CustomTextField(
+                          validator: AppValidators.price,
                           label: "Narxi",
                           icon: Icons.monetization_on_outlined,
                           controller: priceController,
@@ -150,12 +156,9 @@ class _AddProductDialogState extends State<AddProductDialog> {
                     const SizedBox(height: 10),
                   ],
                 ),
-                // 4. NARXI VA SONI (STOCK)
-
                 const SizedBox(height: 15),
-
-                // 5. MAHSULOT HAQIDA (DESCRIPTION)
                 CustomTextField(
+                  validator: AppValidators.quantity,
                   label: "Soni",
                   formatters: [FilteringTextInputFormatter.digitsOnly],
                   icon: Icons.description,
@@ -170,6 +173,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
                   icon: Icons.description,
                   maxLines: 3,
                   controller: detailsController,
+                  validator: (t) => AppValidators.required(
+                    t,
+                    "Mahsulot haqida",
+                  ),
                 ),
                 const SizedBox(height: 15),
                 const Text("Qo'shimcha parametrlar",
@@ -187,9 +194,26 @@ class _AddProductDialogState extends State<AddProductDialog> {
             onPressed: () => Navigator.pop(context),
             child: const Text("Bekor qilish")),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              Navigator.pop(context);
+              var result = await equipmentProvider.addEquipment(
+                  name: nameController.text,
+                  brandId: equipmentProvider.selectedBrand!.id,
+                  categoryId: equipmentProvider.selectedCategory!.id,
+                  quantity: int.parse(quantityController.text),
+                  model: modelController.text,
+                  description: detailsController.text,
+                  pricePerDay: double.parse(pricePerDayController.text
+                      .replaceAll(RegExp(r'\s+'), '')),
+                  replacementValue: double.parse(
+                      priceController.text.replaceAll(RegExp(r'\s+'), '')),
+                  isMainProduct: isMainProduct,
+                  hasAccessories: hasAccessories,
+                  image: equipmentProvider.imagePath);
+              if (result) {
+                await Future.delayed(Duration(seconds: 2));
+                Navigator.pop(context,result);
+              }
             }
           },
           style: ElevatedButton.styleFrom(

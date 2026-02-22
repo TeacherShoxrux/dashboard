@@ -1,4 +1,8 @@
+import 'package:admin/core/custom_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/customer_notifier.dart';
 
 class CustomerSearchWidget extends StatefulWidget {
   const CustomerSearchWidget({super.key});
@@ -27,7 +31,7 @@ class _CustomerSearchWidgetState extends State<CustomerSearchWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    final customerProvider = context.watch<CustomerNotifierProvider>();
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
@@ -48,46 +52,50 @@ class _CustomerSearchWidgetState extends State<CustomerSearchWidget> {
           child: Column(
             children: [
               if (isMobile)
-                _buildMobileLayout()
+                Column(
+                  children: [
+                    // _buildDropdown(),
+                    const SizedBox(height: 12),
+                  ],
+                )
               else
-
-                _buildDesktopLayout(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        maxLines: 1,
+                        label: "Qidiruv",
+                        controller: _searchController,
+                        onSubmitted: (_) => customerProvider.getAllCustomers(
+                            search: _searchController.text),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () =>
+                              customerProvider.getAllCustomers().then((e) {
+                            _searchController.clear();
+                          }),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: () => customerProvider.getAllCustomers(
+                          search: _searchController.text),
+                      icon: const Icon(Icons.search),
+                      label: const Text("Qidirish"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 18),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                    )
+                  ],
+                )
             ],
           ),
         );
       },
-    );
-  }
-
-  // Mobil uchun layout
-  Widget _buildMobileLayout() {
-    return Column(
-      children: [
-        _buildDropdown(),
-        const SizedBox(height: 12),
-        _buildTextField(),
-      ],
-    );
-  }
-
-  // Desktop/Web uchun layout
-  Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        SizedBox(width: 150, child: _buildDropdown()),
-        const SizedBox(width: 12),
-        Expanded(child: _buildTextField()),
-        const SizedBox(width: 12),
-        ElevatedButton.icon(
-          onPressed: () => _handleSearch(),
-          icon: const Icon(Icons.search),
-          label: const Text("Qidirish"),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        )
-      ],
     );
   }
 
@@ -98,7 +106,8 @@ class _CustomerSearchWidgetState extends State<CustomerSearchWidget> {
       decoration: InputDecoration(
         labelText: "Turini tanlang",
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
       items: _searchTypes.map((type) {
         return DropdownMenuItem(
@@ -119,7 +128,8 @@ class _CustomerSearchWidgetState extends State<CustomerSearchWidget> {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        hintText: "${_searchTypes.firstWhere((e) => e['value'] == _selectedType)['label']} bo'yicha qidiruv...",
+        hintText:
+            "${_searchTypes.firstWhere((e) => e['value'] == _selectedType)['label']} bo'yicha qidiruv...",
         prefixIcon: const Icon(Icons.person_search),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         suffixIcon: IconButton(

@@ -6,33 +6,35 @@ class AddCustomerDialog extends StatefulWidget {
   @override
   _AddCustomerDialogState createState() => _AddCustomerDialogState();
 }
+
 class PhoneContact {
   String label; // Akasi, do'sti va h.k.
   TextEditingController controller;
 
   PhoneContact({required this.label, required this.controller});
 }
+
 class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
-
 
 // State ichida:
   List<PhoneContact> extraPhones = [];
 
   void _addPhoneField() {
-  setState(() {
-  extraPhones.add(PhoneContact(
-  label: "", // Foydalanuvchi o'zi yozadi
-  controller: TextEditingController(),
-  ));
-  });
+    setState(() {
+      extraPhones.add(PhoneContact(
+        label: "", // Foydalanuvchi o'zi yozadi
+        controller: TextEditingController(),
+      ));
+    });
   }
+
   // Ma'lumotlar holati
   String gender = "Erkak";
   bool hasPassport = true;
   DateTime? birthDate;
 
-  var passportType="Oddiy";
+  var passportType = "Oddiy";
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text("Yangi mijoz qo'shish"),
-          IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+          IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close)),
         ],
       ),
       content: SizedBox(
@@ -58,7 +62,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   children: [
                     Expanded(child: _buildField("Ism", Icons.person)),
                     const SizedBox(width: 15),
-                    Expanded(child: _buildField("Familiya", Icons.person_outline)),
+                    Expanded(
+                        child: _buildField("Familiya", Icons.person_outline)),
                   ],
                 ),
                 const SizedBox(height: 15),
@@ -67,19 +72,30 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildDropdown("Jinsi", ["Erkak", "Ayol"], (val) => setState(() => gender = val!)),
+                      child: _buildDropdown("Jinsi", ["Erkak", "Ayol"],
+                          (val) => setState(() => gender = val!)),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Passport bormi?", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          const Text("Passport bormi?",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey)),
                           Row(
                             children: [
-                              Radio(value: true, groupValue: hasPassport, onChanged: (bool? v) => setState(() => hasPassport = v!)),
+                              Radio(
+                                  value: true,
+                                  groupValue: hasPassport,
+                                  onChanged: (bool? v) =>
+                                      setState(() => hasPassport = v!)),
                               const Text("Bor"),
-                              Radio(value: false, groupValue: hasPassport, onChanged: (bool? v) => setState(() => hasPassport = v!)),
+                              Radio(
+                                  value: false,
+                                  groupValue: hasPassport,
+                                  onChanged: (bool? v) =>
+                                      setState(() => hasPassport = v!)),
                               const Text("Yo'q"),
                             ],
                           ),
@@ -93,9 +109,13 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                 const SizedBox(height: 15),
                 Row(
                   children: [
-                    Expanded(child: _buildField("JSHSHIR", Icons.numbers, isNumber: true)),
+                    Expanded(
+                        child: _buildField("JSHSHIR", Icons.numbers,
+                            isNumber: true)),
                     const SizedBox(width: 15),
-                    Expanded(child: _buildField("Passport Seriya va Raqam", Icons.badge)),
+                    Expanded(
+                        child: _buildField(
+                            "Passport Seriya va Raqam", Icons.badge)),
                   ],
                 ),
 
@@ -106,15 +126,19 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Passport turi", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          const Text("Passport turi",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey)),
                           DropdownButtonFormField<String>(
                             value: passportType,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.assessment_outlined),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8)),
                             ),
                             items: ["Oddiy", "Zagran"].map((type) {
-                              return DropdownMenuItem(value: type, child: Text(type));
+                              return DropdownMenuItem(
+                                  value: type, child: Text(type));
                             }).toList(),
                             onChanged: (val) {
                               setState(() {
@@ -129,8 +153,10 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     // Agar Zagran bo'lsa, qo'shimcha field chiqadi, aks holda JSHSHIR turadi
                     Expanded(
                       child: passportType == "Zagran"
-                          ? _buildField("Passport haqida (Qo'shimcha)", Icons.info_outline)
-                          : _buildField("JSHSHIR", Icons.numbers, isNumber: true),
+                          ? _buildField("Passport haqida (Qo'shimcha)",
+                              Icons.info_outline)
+                          : _buildField("JSHSHIR", Icons.numbers,
+                              isNumber: true),
                     ),
                   ],
                 ),
@@ -141,10 +167,14 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   children: [
                     // Agar tepada JSHSHIRni zagranga almashtirgan bo'lsak, bu yerda JSHSHIRni ko'rsatish mumkin
                     if (passportType == "Zagran")
-                      Expanded(child: _buildField("JSHSHIR", Icons.numbers, isNumber: true)),
+                      Expanded(
+                          child: _buildField("JSHSHIR", Icons.numbers,
+                              isNumber: true)),
                     if (passportType == "Zagran") const SizedBox(width: 15),
 
-                    Expanded(child: _buildField("Passport Seriya va Raqam", Icons.badge)),
+                    Expanded(
+                        child: _buildField(
+                            "Passport Seriya va Raqam", Icons.badge)),
                   ],
                 ),
 
@@ -156,11 +186,14 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       child: _buildDatePicker("Tug'ilgan kun"),
                     ),
                     const SizedBox(width: 15),
-                    Expanded(child: _buildField("Taklif qilgan odam", Icons.card_giftcard)),
+                    Expanded(
+                        child: _buildField(
+                            "Taklif qilgan odam", Icons.card_giftcard)),
                   ],
                 ),
                 const SizedBox(height: 10),
-                const Text("Telefon raqamlari", style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text("Telefon raqamlari",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -171,21 +204,24 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                         decoration: InputDecoration(
                           labelText: "O'zini",
                           hintText: "O'zini",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8)),
                         ),
                         onChanged: (String val) {},
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(child: _buildField("O'zining telefon raqami", Icons.phone, hint: "+998")),
+                    Expanded(
+                        child: _buildField(
+                            "O'zining telefon raqami", Icons.phone,
+                            hint: "+998")),
                     IconButton(
-                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                      icon: const Icon(Icons.remove_circle_outline,
+                          color: Colors.red),
                       onPressed: () {},
                     ),
-
                   ],
                 ),
-
 
                 // Dinamik qo'shiladigan raqamlar
                 if (extraPhones.isNotEmpty) ...[
@@ -206,9 +242,11 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                                 decoration: InputDecoration(
                                   labelText: "Kimniki?",
                                   hintText: "Masalan: Akasi",
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8)),
                                 ),
-                                onChanged: (val) => extraPhones[index].label = val,
+                                onChanged: (val) =>
+                                    extraPhones[index].label = val,
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -223,8 +261,10 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                             ),
                             // O'chirish tugmasi
                             IconButton(
-                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                              onPressed: () => setState(() => extraPhones.removeAt(index)),
+                              icon: const Icon(Icons.remove_circle_outline,
+                                  color: Colors.red),
+                              onPressed: () =>
+                                  setState(() => extraPhones.removeAt(index)),
                             ),
                           ],
                         ),
@@ -241,7 +281,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                 ),
 
                 const SizedBox(height: 15),
-                _buildField("Details (Batafsil ma'lumot)", Icons.description, maxLines: 2),
+                _buildField("Details (Batafsil ma'lumot)", Icons.description,
+                    maxLines: 2),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -256,7 +297,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Bekor qilish")),
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
@@ -264,7 +307,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
               Navigator.pop(context);
             }
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue, foregroundColor: Colors.white),
           child: const Text("Mijozni saqlash"),
         ),
       ],
@@ -272,7 +316,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   }
 
   // Yordamchi metodlar
-  Widget _buildField(String label, IconData icon, {bool isNumber = false, int maxLines = 1, String? hint}) {
+  Widget _buildField(String label, IconData icon,
+      {bool isNumber = false, int maxLines = 1, String? hint}) {
     return TextFormField(
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       maxLines: maxLines,
@@ -286,14 +331,16 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, Function(String?) onChanged) {
+  Widget _buildDropdown(
+      String label, List<String> items, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         isDense: true,
       ),
-      items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+      items:
+          items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
       onChanged: onChanged,
     );
   }
@@ -316,7 +363,9 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           prefixIcon: const Icon(Icons.calendar_today, size: 20),
           isDense: true,
         ),
-        child: Text(birthDate == null ? "Tanlang" : "${birthDate!.day}.${birthDate!.month}.${birthDate!.year}"),
+        child: Text(birthDate == null
+            ? "Tanlang"
+            : "${birthDate!.day}.${birthDate!.month}.${birthDate!.year}"),
       ),
     );
   }
