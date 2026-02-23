@@ -29,7 +29,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     required this.loader,
     required this.notify,
   });
-  List<String> imageList=[];
+  List<String> imageList = [];
   List<EquipmentModel> equipments = [];
   List<BrandModel> brands = [];
   List<CategoryModel> category = [];
@@ -53,12 +53,11 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
           (json as List).map((i) => EquipmentModel.fromJson(i)).toList();
       return items;
     });
-    if (response is Success) {
-      equipments = (response as Success).value.data!;
+    if (response.isSuccess) {
+      equipments = response.data!;
     } else {
       notify.show("Server xatosi: ${response}", type: NotificationType.error);
     }
-
     loader.setLoading(false);
     notifyListeners();
   }
@@ -70,8 +69,8 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       final items = (json as List).map((i) => BrandModel.fromJson(i)).toList();
       return items;
     });
-    if (response is Success) {
-      brands = (response as Success).value.data!;
+    if (response.isSuccess) {
+      brands = response.data!;
     } else {
       notify.show("Server xatosi: ${response}", type: NotificationType.error);
     }
@@ -88,8 +87,8 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
           (json as List).map((i) => CategoryModel.fromJson(i)).toList();
       return items;
     });
-    if (response is Success) {
-      category = (response as Success).value.data!;
+    if (response.isSuccess) {
+      category = response.data ?? [];
     } else {
       notify.show("Server xatosi: ${response}", type: NotificationType.error);
     }
@@ -97,27 +96,28 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     notifyListeners();
   }
 
-  Future<bool> addCategory(int brandId,String name, String description,
+  Future<bool> addCategory(int brandId, String name, String description,
       [String? imagePath = null]) async {
-    try{
+    try {
       loader.setLoading(true);
-    final response = await safeApiCall(
-            () => api.createCategory(brandId,name, description, imagePath),
-            (data) => data.toString());
-    if (response is Success) {
-      notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
-      loader.setLoading(false);
-      imagePath=null;
-      return true;
-    } else {
-      notify.show("Server rad etdi: ${response}",
-          type: NotificationType.error,duration: Duration(seconds: 1));
-      loader.setLoading(false);
-      return false;
-    }
+      final response = await safeApiCall(
+          () => api.createCategory(brandId, name, description, imagePath),
+          (data) => data.toString());
+      if (response.isSuccess) {
+        notify.show("Muvaffaqiyatli yuklandi!",
+            type: NotificationType.success, duration: Duration(seconds: 1));
+        loader.setLoading(false);
+        imagePath = null;
+        return true;
+      } else {
+        notify.show("Server rad etdi: ${response}",
+            type: NotificationType.error, duration: Duration(seconds: 1));
+        loader.setLoading(false);
+        return false;
+      }
     } catch (e) {
       notify.show("Xatolik yuz berdi: ${e}",
-          type: NotificationType.error,duration: Duration(seconds: 1));
+          type: NotificationType.error, duration: Duration(seconds: 1));
       loader.setLoading(false);
       return false;
     }
@@ -129,78 +129,79 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       loader.setLoading(true);
       final response = await safeApiCall(
           () => api.createBrand(brandName, description, imagePath),
-              (data) => data.toString());
-      if (response is Success) {
-        notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
-        imagePath=null;
+          (data) => data.toString());
+      if (response.isSuccess) {
+        notify.show("Muvaffaqiyatli yuklandi!",
+            type: NotificationType.success, duration: Duration(seconds: 1));
+        imagePath = null;
         loader.setLoading(false);
         return true;
       } else {
-
         notify.show("Server rad etdi: ${response}",
-            type: NotificationType.error,duration: Duration(seconds: 1));
+            type: NotificationType.error, duration: Duration(seconds: 1));
         loader.setLoading(false);
         return false;
       }
     } catch (e) {
-      notify.show("Xatolik yuz berdi: ${e}",
-          type: NotificationType.error,duration: Duration(seconds: 1));
       loader.setLoading(false);
+      notify.show("Xatolik yuz berdi: ${e}",
+          type: NotificationType.error, duration: Duration(seconds: 1));
+
       return false;
     }
   }
-  Future<bool> addEquipment({
-    required String name,
-    required int brandId,
-    required int categoryId,
-    required int quantity,
-    required String model,
-    required String description,
-    required double pricePerDay,
-    required double replacementValue,
-    required bool isMainProduct,
-    required bool hasAccessories,
-    String? image
-  }) async {
+
+  Future<bool> addEquipment(
+      {required String name,
+      required int brandId,
+      required int categoryId,
+      required int quantity,
+      required String model,
+      required String description,
+      required double pricePerDay,
+      required double replacementValue,
+      required bool isMainProduct,
+      required bool hasAccessories,
+      String? image}) async {
     try {
       loader.setLoading(true);
       final response = await safeApiCall(
           () => api.createEquipment({
-            "name": name,
-            "brandId": categoryId,
-            "categoryId": categoryId,
-            "quantity": quantity,
-            "model": model,
-            "description": description,
-            "pricePerDay": pricePerDay,
-            "replacementValue": replacementValue,
-            "isMainProduct": isMainProduct,
-            "hasAccessories": hasAccessories,
-            "image": image
-          }),
-              (data) => data.toString());
-      if (response is Success) {
-        notify.show("Muvaffaqiyatli yuklandi!", type: NotificationType.success,duration: Duration(seconds: 1));
-        imagePath=null;
+                "name": name,
+                "brandId": categoryId,
+                "categoryId": categoryId,
+                "quantity": quantity,
+                "model": model,
+                "description": description,
+                "pricePerDay": pricePerDay,
+                "replacementValue": replacementValue,
+                "isMainProduct": isMainProduct,
+                "hasAccessories": hasAccessories,
+                "image": image
+              }),
+          (data) => data.toString());
+      if (response.isSuccess) {
+        notify.show("Muvaffaqiyatli yuklandi!",
+            type: NotificationType.success, duration: Duration(seconds: 1));
+        imagePath = null;
         imageList.clear();
         loader.setLoading(false);
         return true;
       } else {
         notify.show("Server rad etdi: ${response}",
-            type: NotificationType.error,duration: Duration(seconds: 1));
+            type: NotificationType.error, duration: Duration(seconds: 1));
         loader.setLoading(false);
         return false;
       }
     } catch (e) {
       notify.show("Xatolik yuz berdi: ${e}",
-          type: NotificationType.error,duration: Duration(seconds: 1));
+          type: NotificationType.error, duration: Duration(seconds: 1));
       loader.setLoading(false);
       return false;
     }
   }
 
   Future<String?> pickEquipmentImage(FileType type) async {
-
     Uint8List? pickedFileBytes;
     String? pickedFileName;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -212,12 +213,13 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       PlatformFile file = result.files.first;
       pickedFileBytes = file.bytes; // Web-da fayl mana shu bytes ichida bo'ladi
       pickedFileName = file.name;
-      return await uploadEquipmentImage(pickedFileBytes!, pickedFileName!);
+      return await uploadEquipmentImage(pickedFileBytes!, pickedFileName);
     }
     return null;
   }
 
-  Future<String?> uploadEquipmentImage(Uint8List fileBytes, String fileName) async {
+  Future<String?> uploadEquipmentImage(
+      Uint8List fileBytes, String fileName) async {
     loader.setLoading(true);
     try {
       final multipartFile = http.MultipartFile.fromBytes(
@@ -228,11 +230,12 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
 
       final response = await safeApiCall<String>(
           () => api.uploadFile(multipartFile), (data) => data.toString());
-      if (response is Success) {
-       imagePath = (response as Success).value.data!;
-        notify.show("Muvaffaqiyatli yuklandi! \n $imagePath", type: NotificationType.success);
-       loader.setLoading(false);
-       return imagePath;
+      if (response.isSuccess) {
+        imagePath = response.data;
+        notify.show("Muvaffaqiyatli yuklandi! \n $imagePath",
+            type: NotificationType.success);
+        loader.setLoading(false);
+        return imagePath;
       } else {
         notify.show("Server rad etdi: ${response}",
             type: NotificationType.error);

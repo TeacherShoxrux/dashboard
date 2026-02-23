@@ -14,10 +14,7 @@ class ResultConverter extends JsonConverter {
 
     if (body is Map<String, dynamic>) {
       final bool isSuccess = body['isSuccess'] ?? false;
-
       if (isSuccess) {
-        // MUHIM: Success-ga butun body-ni (Map) beramiz.
-        // ResultType bu Result<BaseResponse<...>> bo'lgani uchun dynamic cast ishlatamiz.
         final successResult = Success(body);
 
         return response.copyWith<ResultType>(

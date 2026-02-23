@@ -1,12 +1,14 @@
-sealed class Result<T> {
+import 'package:admin/network/response_base.dart';
 
+sealed class Result<T> {
+  final T? value;
+  final Exception? exception;
+  Result(this.value, {this.exception});
 }
 class Success<T> extends Result<T> {
-  final T value;
-
-  Success( this.value);
+  Success(T value) : super(value);
 }
 class Error<T> extends Result<T> {
   final Exception exception;
-  Error(this.exception);
+  Error(this.exception, {T? value}) : super(value);
 }

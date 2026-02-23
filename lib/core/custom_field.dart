@@ -9,30 +9,45 @@ class CustomTextField extends StatelessWidget {
   final Function(String?)? onSubmitted;
   final String? suffix;
   final String? label;
+  final Function(String)? onChange;
   final List<TextInputFormatter>? formatters;
   final TextEditingController? controller;
   final FormFieldValidator<String>? validator;
-  const CustomTextField({super.key, this.maxLines, this.icon, this.suffix, this.label, this.controller, this.formatters,this.validator, this.suffixIcon, this.onSubmitted});
+  const CustomTextField(
+      {super.key,
+      this.maxLines,
+      this.icon,
+      this.suffix,
+      this.label,
+      this.controller,
+      this.formatters,
+      this.validator,
+      this.suffixIcon,
+      this.onSubmitted,
+      this.onChange});
 
   @override
-  Widget build(BuildContext context,) {
+  Widget build(
+    BuildContext context,
+  ) {
     return TextFormField(
+      onChanged: onChange,
       validator: validator,
       onFieldSubmitted: onSubmitted,
       inputFormatters: formatters,
       maxLines: maxLines,
       controller: controller,
       decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, size: 20),
-        suffixText: suffix,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        isDense: true,
-        suffixIcon: suffixIcon
-      ),
+          labelText: label,
+          prefixIcon: Icon(icon, size: 20),
+          suffixText: suffix,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          isDense: true,
+          suffixIcon: suffixIcon),
     );
   }
 }
+
 class AppValidators {
   static String? required(String? value, String fieldName) {
     if (value == null || value.trim().isEmpty) {
@@ -40,6 +55,7 @@ class AppValidators {
     }
     return null;
   }
+
   static String? price(String? value) {
     if (value == null || value.isEmpty) return 'Narxni kiriting';
     String cleanValue = value.replaceAll(RegExp(r'\s+'), '');
@@ -58,12 +74,11 @@ class AppValidators {
     if (!regex.hasMatch(value)) return 'Format noto\'g\'ri (+998XXXXXXXXX)';
     return null;
   }
+
   static String? quantity(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Soni (miqdori)ni kiriting';
     }
-
-    // Bo'sh joylarni (agar formatter bo'lsa) olib tashlaymiz
     String cleanValue = value.replaceAll(' ', '');
     final number = int.tryParse(cleanValue);
 
@@ -78,9 +93,11 @@ class AppValidators {
     return null; // Hammasi to'g'ri bo'lsa
   }
 }
+
 class ThousandSeparatorFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     if (newValue.text.isEmpty) return newValue;
 
     // Faqat raqamlarni olamiz

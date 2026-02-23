@@ -1,46 +1,44 @@
 import 'package:admin/core/custom_field.dart';
+import 'package:admin/features/customers/models/customer_create_model.dart';
+import 'package:admin/features/customers/provider/file_uploader_notifier.dart';
 import 'package:admin/network/api_constants.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:provider/provider.dart';
 import '../../../core/widgets/file_priveiw_widget.dart';
 import '../../../core/widgets/file_uploader.dart';
-
+import '../provider/customer_notifier.dart';
 class AddCustomerDialog extends StatefulWidget {
   const AddCustomerDialog({Key? key}) : super(key: key);
 
   @override
   _AddCustomerDialogState createState() => _AddCustomerDialogState();
 }
-
 class PhoneContact {
   String label; // Akasi, do'sti va h.k.
   TextEditingController controller;
-
   PhoneContact({required this.label, required this.controller});
 }
-
 class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
-
-// State ichida:
-  List<PhoneContact> extraPhones = [];
-
+  List<PhoneRequestModel> phones = [
+    PhoneRequestModel(
+      name: "O'ziniki",
+      phoneNumber: '',
+    )
+  ];
   void _addPhoneField() {
     setState(() {
-      extraPhones.add(PhoneContact(
-        label: "", // Foydalanuvchi o'zi yozadi
-        controller: TextEditingController(),
+      phones.add(PhoneRequestModel(
+        name: "",
+        phoneNumber: '',
       ));
     });
   }
-
-  // Ma'lumotlar holati
   String gender = "Erkak";
   bool hasPassport = true;
   DateTime? dateOfBirth;
-
   var passportType = "Oddiy";
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -51,10 +49,13 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final addressController = TextEditingController();
   var isWoman = false;
   final isOriginalDocumentLeft = false;
-  final List<String> files=[];
+  final List<String> files = [];
   String? image;
   @override
   Widget build(BuildContext context) {
+    final customerProvider =
+        Provider.of<CustomerNotifierProvider>(context, listen: false);
+    final fileProvider = Provider.of<FileUploaderNotifier>(context, listen: false);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Row(
@@ -78,12 +79,16 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                   children: [
                     Expanded(
                         child: CustomTextField(
+                            validator: (value) =>
+                                AppValidators.required(value, "Ism kiriting"),
                             label: "Ism",
                             controller: firstNameController,
                             icon: Icons.person)),
                     const SizedBox(width: 15),
                     Expanded(
                         child: CustomTextField(
+                            validator: (value) => AppValidators.required(
+                                value, "Familya kiriting"),
                             label: "Familiya",
                             controller: lastNameController,
                             icon: Icons.person_outline)),
@@ -157,19 +162,28 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       ),
                     ),
                     const SizedBox(width: 15),
-
                   ],
                 ),
                 const SizedBox(height: 15),
                 Row(
                   children: [
-                      Expanded(
-                          child: CustomTextField(label: "JSHSHIR",icon:  Icons.numbers)),
-                    SizedBox(width: 15),
-
                     Expanded(
-                        child:CustomTextField(label:
-                            "Passport Seriya va Raqam",icon:  Icons.badge)),
+                        child: CustomTextField(
+                            validator: AppValidators.price,
+                            formatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            controller: jshshirController,
+                            label: "JSHSHIR",
+                            icon: Icons.numbers)),
+                    SizedBox(width: 15),
+                    Expanded(
+                        child: CustomTextField(
+                            controller: passportSeriesNumController,
+                            validator: (c) => AppValidators.required(
+                                c, "Passport Seriya va Raqam kiriting"),
+                            label: "Passport Seriya va Raqam",
+                            icon: Icons.badge)),
                   ],
                 ),
                 const SizedBox(height: 15),
@@ -181,8 +195,8 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     const SizedBox(width: 15),
                     Expanded(
                         child: CustomTextField(
-                          label:
-                            "Taklif qilgan odam",icon:  Icons.card_giftcard)),
+                            label: "Taklif qilgan odam",
+                            icon: Icons.card_giftcard)),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -201,14 +215,17 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8)),
                         ),
-                        onChanged: (String val) {},
+                        onChanged: (String val) {
+                          phones.first.phoneNumber = val;
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                         child: CustomTextField(
-                          label:
-                            "O'zining telefon raqami", icon:  Icons.phone)),
+                            label: "O'zining telefon raqami",
+                            validator: AppValidators.phone,
+                            icon: Icons.phone)),
                     IconButton(
                       icon: const Icon(Icons.remove_circle_outline,
                           color: Colors.red),
@@ -216,14 +233,12 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                     ),
                   ],
                 ),
-
-                // Dinamik qo'shiladigan raqamlar
-                if (extraPhones.isNotEmpty) ...[
+                if (phones.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   ListView.builder(
                     shrinkWrap: true, // Scroll ichida ishlashi uchun
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: extraPhones.length,
+                    itemCount: phones.length - 1,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -238,18 +253,21 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8)),
                                 ),
+                                validator: (e) => AppValidators.required(
+                                    e, "Kiritishda xatolik"),
                                 onChanged: (val) =>
-                                    extraPhones[index].label = val,
+                                    phones[index + 1].name = val,
                               ),
                             ),
                             const SizedBox(width: 10),
-                            // Telefon raqami
                             Expanded(
                               child: CustomTextField(
-                                label:
-                                "Telefon raqami",
-                              icon:   Icons.phone_android,
-                                // controller: extraPhones[index].controller, // Controllerni bog'laysiz
+                                label: "Telefon raqami",
+                                icon: Icons.phone_android,
+                                onChange: (phone) {
+                                  phones[index + 1].name = phone;
+                                },
+                                validator: AppValidators.phone,
                               ),
                             ),
                             // O'chirish tugmasi
@@ -257,7 +275,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                               icon: const Icon(Icons.remove_circle_outline,
                                   color: Colors.red),
                               onPressed: () =>
-                                  setState(() => extraPhones.removeAt(index)),
+                                  setState(() => phones.removeAt(index + 1)),
                             ),
                           ],
                         ),
@@ -274,49 +292,71 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                 ),
 
                 const SizedBox(height: 15),
-                CustomTextField(label: "Details (Batafsil ma'lumot)",icon:  Icons.description,
+                CustomTextField(
+                  controller: noteController,
+                    validator: (e)=>AppValidators.required(e, "Biror bir ma'lumot kiriting"),
+                    label: "Details (Batafsil ma'lumot)",
+                    icon: Icons.description,
                     maxLines: 2),
                 const SizedBox(height: 20),
+                Divider(),
+                Text("User foto"),
+                SizedBox(
+                  height: 10,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-
-                    if(image==null)FileUploader(
-                      icon: Icon(Icons.add_a_photo,),
-                      type: FileType.image,
-                      label: "User Photo",
-                      uploader: (String filePath) {
-                        image=filePath;
-                        setState(() {
-
-                        });
-                      },),
-                    if(image!=null)FilePreviewCard(fileName: image!, localPath:ApiConstants.baseUrl+image!, onRemove: () { image=null;setState(() {
-                    }); },),
-
+                    if (image == null)
+                      FileUploader(
+                        icon: Icon(
+                          Icons.add_a_photo,
+                        ),
+                        type: FileType.image,
+                        label: "User Photo",
+                        uploader: (String filePath) {
+                          image = filePath;
+                          setState(() {});
+                        },
+                      ),
+                    if (image != null)
+                      FilePreviewCard(
+                        fileName: image!,
+                        localPath: ApiConstants.baseUrl + image!,
+                        onRemove: () {
+                          image = null;
+                          setState(() {});
+                        },
+                      ),
                   ],
                 ),
-                SizedBox(height: 10,),
+                Divider(),
+                SizedBox(
+                  height: 10,
+                ),
+                Text("Hujjatlar yuklash"),
+                SizedBox(
+                  height: 10,
+                ),
                 SizedBox(
                   height: 100,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: files.length+1,
+                    itemCount: files.length + 1,
                     itemBuilder: (context, index) {
                       if (index == files.length) {
                         return FileUploader(
                           type: FileType.any,
                           uploader: (String filePath) {
                             files.add(filePath);
-                            setState(() {
-
-                            });
-                            },);
+                            setState(() {});
+                          },
+                        );
                       }
                       final file = files[index];
                       return FilePreviewCard(
                         fileName: file,
-                        localPath:ApiConstants.baseUrl+ file, // Agar endi tanlangan bo'lsa
+                        localPath: ApiConstants.baseUrl + file,
                         onRemove: () {
                           setState(() => files.removeAt(index));
                         },
@@ -334,10 +374,30 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
             onPressed: () => Navigator.pop(context),
             child: const Text("Bekor qilish")),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            print("model is valid valid 1");
             if (_formKey.currentState!.validate()) {
-              // Saqlash logikasi
-              Navigator.pop(context);
+              print("model is valid valid 2");
+                var reuult= await customerProvider.addCustomer(CustomerCreateModel(
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    dateOfBirth: dateOfBirth!,
+                    passportSeries:
+                        passportSeriesNumController.text.substring(0, 2),
+                    passportNumber:
+                        passportSeriesNumController.text.substring(2),
+                    jShShir: jshshirController.text,
+                    isWoman: isWoman,
+                    isOriginalDocumentLeft: isOriginalDocumentLeft,
+                    documentScans: files,
+                    address: addressController.text,
+                    note: noteController.text,
+                    userPhotoUrl: image,
+                    phones: phones));
+                if(reuult==true){
+                  await Future.delayed(Duration(seconds: 2));
+                  Navigator.pop(context,reuult);
+                }
             }
           },
           style: ElevatedButton.styleFrom(
@@ -345,22 +405,6 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
           child: const Text("Mijozni saqlash"),
         ),
       ],
-    );
-  }
-
-  // Yordamchi metodlar
-  Widget _buildField(String label, IconData icon,
-      {bool isNumber = false, int maxLines = 1, String? hint}) {
-    return TextFormField(
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon, size: 20),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        isDense: true,
-      ),
     );
   }
 
@@ -400,18 +444,6 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
             ? "Tanlang"
             : "${dateOfBirth!.day}.${dateOfBirth!.month}.${dateOfBirth!.year}"),
       ),
-    );
-  }
-
-  Widget _buildUploadButton(IconData icon, String label) {
-    return Column(
-      children: [
-        IconButton(
-          onPressed: () {}, // File picker logic
-          icon: Icon(icon, color: Colors.blue, size: 30),
-        ),
-        Text(label, style: const TextStyle(fontSize: 10)),
-      ],
     );
   }
 }

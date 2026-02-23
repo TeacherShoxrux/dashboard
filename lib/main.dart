@@ -51,7 +51,8 @@ void main() {
           update: (context, client, previous) =>
               client.getService<ApiService>(),
         ),
-        ProxyProvider<ApiService, FileUploaderNotifier>(
+        ChangeNotifierProxyProvider<ApiService, FileUploaderNotifier>(
+          create: (context) => FileUploaderNotifier(api: context.read<ApiService>()),
           update: (context, client, previous) =>previous??FileUploaderNotifier(api:client ) ,
         ),
 

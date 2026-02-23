@@ -10,20 +10,15 @@ import '../../equipments/data/api_service.dart';
 
 class FileUploaderNotifier  extends ChangeNotifier with BaseRepository{
   final ApiService api;
-
   bool isLoading=false;
   FileUploaderNotifier({required this.api});
   Future<PlatformFile?> pickEquipmentImage(FileType type) async {
-    Uint8List? pickedFileBytes;
-    String? pickedFileName;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: type,
       withData: true,
     );
     if (result != null) {
       PlatformFile file = result.files.first;
-      pickedFileBytes = file.bytes;
-      pickedFileName = file.name;
       return file;
     }
     return null;
@@ -37,8 +32,8 @@ class FileUploaderNotifier  extends ChangeNotifier with BaseRepository{
         filename: fileName,
       );
       final response = await safeApiCall<String>(() => api.uploadFile(multipartFile), (data) => data.toString());
-      if (response is Success) {
-        return (response as Success).value.data!;
+      if (response.isSuccess) {
+        return response.data;
       } else {
         return null;
       }

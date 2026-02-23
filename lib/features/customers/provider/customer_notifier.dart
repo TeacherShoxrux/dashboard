@@ -10,54 +10,52 @@ import '../models/customer_create_model.dart';
 import '../models/customer_model.dart';
 
 class CustomerNotifierProvider extends ChangeNotifier with BaseRepository {
-void init() {
-  try {
-    // getAllEquipments();
-    getAllCustomers();
-  } catch (r) {}
-}
-
-final ApiService api;
-final GlobalLoadingProvider loader;
-final NotificationProvider notify;
-List<CustomerModel> customers = [];
-  CustomerNotifierProvider({required this.api, required this.loader, required this.notify});
-Future<void> getAllCustomers({String? search , int page = 1, int size = 20}) async {
-  loader.setLoading(true);
-  final response = await safeApiCall<List<CustomerModel>>(
-          () => api.getAllCustomers(search: search, page: page, size: size), (json) {
-    final items =
-    (json as List).map((i) => CustomerModel.fromJson(i)).toList();
-    return items;
-  });
-  if (response is Success) {
-    customers = (response as Success).value.data!;
-  } else {
-    notify.show("Server xatosi: ${response}", type: NotificationType.error);
+  void init() {
+    try {
+      getAllCustomers();
+    } catch (r) {}
   }
 
-  loader.setLoading(false);
-  notifyListeners();
-}
-Future<bool?> addCustomer(CustomerCreateModel body) async {
+  final ApiService api;
+  final GlobalLoadingProvider loader;
+  final NotificationProvider notify;
+  List<CustomerModel> customers = [];
+  CustomerNotifierProvider(
+      {required this.api, required this.loader, required this.notify});
+  Future<void> getAllCustomers(
+      {String? search, int page = 1, int size = 20}) async {
+    loader.setLoading(true);
+    final response = await safeApiCall<List<CustomerModel>>(
+        () => api.getAllCustomers(search: search, page: page, size: size),
+        (json) {
+      final items =
+          (json as List).map((i) => CustomerModel.fromJson(i)).toList();
+      return items;
+    });
+    if (response.isSuccess) {
+      customers = response.data!;
+    } else {
+      notify.show("Server xatosi: ${response}", type: NotificationType.error);
+    }
+    loader.setLoading(false);
+    notifyListeners();
+  }
 
- try{
-   loader.setLoading(true);
-   final response = await safeApiCall(
-           () => api.createCustomer(body.toJson()), (json) {
-     final items =
-     (json as List).map((i) => CustomerModel.fromJson(i)).toList();
-     return items;
-   });
-   if (response is Success) {
-     customers = (response as Success).value.data!;
-     return true;
-   } else {
-     notify.show("Server xatosi: ${response}", type: NotificationType.error);
-   }
- }catch(e){
-   loader.setLoading(true);
- }
- return null;
-}
+  Future<bool?> addCustomer(CustomerCreateModel body) async {
+    try {
+      loader.setLoading(true);
+      final response =
+          await safeApiCall(() => api.createCustomer(body.toJson()), (json) =>json);
+      if (response.isSuccess) {
+        return true;
+      } else {
+        if(response is Error)
+        notify.show("Xatolik yuzaga keldi: ${response.message}", type: NotificationType.error);
+      }
+    } catch (e) {
+      loader.setLoading(false);
+    }
+    if(loader.isLoading)loader.setLoading(false);
+    return Future.value(false);
+  }
 }

@@ -37,11 +37,15 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 ElevatedButton.icon(
-                  onPressed: (){
-                    showDialog(
+                  onPressed: ()async{
+                    var result = await showDialog(
                       context: context,
                       builder: (context) => const AddCustomerDialog(),
                     );
+                    if(result==true){
+                      await Future.delayed(Duration(seconds: 1));
+                      customerProvider.getAllCustomers();
+                    }
                   },
                   // onPressed: () => setState(() => isAddingNew = !isAddingNew),
                   icon: Icon(Icons.add),
