@@ -12,7 +12,6 @@ class CustomerCreateModel {
   String? userPhotoUrl;
   List<String> documentScans;
   List<PhoneRequestModel> phones;
-
   CustomerCreateModel({
     required this.firstName,
     required this.lastName,
@@ -28,15 +27,13 @@ class CustomerCreateModel {
     required this.documentScans,
     required this.phones,
   });
-
-  // API'ga yuborish uchun JSON formatiga o'tkazish
   Map<String, dynamic> toJson() {
     return {
-      "firstName": firstName,
-      "lastName": lastName,
+      "firstName": firstName.toUpperCase(),
+      "lastName": lastName.toLowerCase(),
       "dateOfBirth": dateOfBirth.toIso8601String(), // ISO formatda yuborish
-      "passportSeries": passportSeries,
-      "passportNumber": passportNumber,
+      "passportSeries": passportSeries.toUpperCase(),
+      "passportNumber": passportNumber.toUpperCase(),
       "jShShIR": jShShir,
       "isWoman": isWoman,
       "isOriginalDocumentLeft": isOriginalDocumentLeft,
@@ -60,7 +57,7 @@ class PhoneRequestModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "name": name,
+      "name": name.toUpperCase(),
       "phoneNumber": phoneNumber,
     };
   }

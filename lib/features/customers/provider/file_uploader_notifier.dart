@@ -1,11 +1,8 @@
 import 'dart:typed_data';
-
 import 'package:admin/network/base_repository.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http show MultipartFile;
-
-import '../../../network/model_response.dart';
 import '../../equipments/data/api_service.dart';
 
 class FileUploaderNotifier  extends ChangeNotifier with BaseRepository{
