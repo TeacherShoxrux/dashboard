@@ -4,6 +4,7 @@ class EquipmentModel {
   final String brandName;
   final String categoryName;
   final double pricePerDay;
+  int quantity = 0;
   final String? imageUrl; // Null bo'lishi mumkinligini hisobga olamiz
   final int availableCount;
 

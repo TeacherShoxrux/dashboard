@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'equipment_search.dart';
 
-class CalendarSidePanel extends StatelessWidget {
-  const CalendarSidePanel({super.key});
+class RentalProcessSidePanel extends StatelessWidget {
+  const RentalProcessSidePanel({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +21,9 @@ class CalendarSidePanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             EquipmentSearchWidget(),
-      
             const SizedBox(height: 20),
             const Divider(color: Colors.white10),
             const SizedBox(height: 10),
-      
             RentalProcessWidget()
           ],
         ),

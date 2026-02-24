@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import '../../../../core/loading/global_loader_widget.dart';
 import '../../../../core/notification/notification_service.dart';
 import '../../../../core/notification/top_notification.dart';
-import '../../../../network/model_response.dart';
 import '../../data/api_service.dart';
 import '../../domain/models/brand_model.dart';
 import '../../domain/models/category_model.dart';
@@ -41,7 +40,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
       String? search,
       int? page = 1,
       int? pageSize = 20}) async {
-    loader.setLoading(true);
+    // loader.setLoading(true);
     final response = await safeApiCall<List<EquipmentModel>>(
         () => api.getEquipments(
             brandId: brandId,
@@ -58,7 +57,7 @@ class EquipmentProvider extends ChangeNotifier with BaseRepository {
     } else {
       notify.show("Server xatosi: ${response}", type: NotificationType.error);
     }
-    loader.setLoading(false);
+    // loader.setLoading(false);
     notifyListeners();
   }
 

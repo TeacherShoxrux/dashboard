@@ -19,10 +19,20 @@ class RentNotifierProvider extends ChangeNotifier with BaseRepository{
 
 
   final List<EquipmentModel> _equipmentSelectedList = [];
+  DateTime? startDate;
+  DateTime? endDate;
+  int totalDays=0;
+
+  double get pricePerDay =>equipmentSelectedList.isEmpty?0:equipmentSelectedList.map((e) => e.pricePerDay*e.quantity).reduce((value, element) => value + element);
+  double get totalPrice =>pricePerDay*totalDays;
+  update(){
+    notifyListeners();
+  }
+
   List<EquipmentModel> get equipmentSelectedList => _equipmentSelectedList;
   void addEquipment(EquipmentModel equipment){
    if(_equipmentSelectedList.where((e)=>e.id == equipment.id).isEmpty){
-     _equipmentSelectedList.add(equipment);
+     _equipmentSelectedList.add(equipment..quantity=1);
      notifyListeners();
      notify.show("Qo'shildi",type: NotificationType.success);
      return;

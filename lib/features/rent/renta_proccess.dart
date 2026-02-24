@@ -1,4 +1,7 @@
+import 'package:admin/features/rent/provider/rent_notifier_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class RentalProcessWidget extends StatefulWidget {
   const RentalProcessWidget({super.key});
@@ -8,22 +11,36 @@ class RentalProcessWidget extends StatefulWidget {
 }
 
 class _RentalProcessWidgetState extends State<RentalProcessWidget> {
-  // Checkbox holatlari
-  bool _isShiftPriceEnabled1 = false;
+// Checkbox holatlari
   bool _isShiftPriceEnabled = false;
+  bool _isNightShiftEnabled = false;
   bool _isPrepaymentEnabled = false;
 
-  // To'lov turi
-  String _selectedPayment = "Naqt";
+// Qiymatlar uchun controllerlar
+  final TextEditingController _shiftPriceController = TextEditingController();
+  final TextEditingController _nightShiftController = TextEditingController();
+  final TextEditingController _prepaymentController = TextEditingController();
 
-  // Rasmlar ro'yxati (placeholder)
+  @override
+  void dispose() {
+    _shiftPriceController.dispose();
+    _nightShiftController.dispose();
+    _prepaymentController.dispose();
+    super.dispose();
+  }
+  String _selectedPayment = "Naqt";
   final List<String> _uploadedImages = [
+    "https://via.placeholder.com/150",
+    "https://via.placeholder.com/150",
+    "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
   ];
 
   @override
   Widget build(BuildContext context) {
+    final rentProvider =
+        Provider.of<RentNotifierProvider>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -43,36 +60,55 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
         children: [
           _buildHeader("Ijaraga berish"),
 
-          // 1. Smena narxi qismi (Checkbox bilan)
           _buildCheckboxInput(
             label: "1 smena narxi:",
-            value: _isShiftPriceEnabled,
-            onChanged: (val) => setState(() => _isShiftPriceEnabled = val!),
+            isChecked: _isShiftPriceEnabled,
+            controller: _shiftPriceController..text=rentProvider.pricePerDay.toString(),
+            onToggle: (val) {
+              setState(() {
+                _isShiftPriceEnabled = val ?? false;
+              });
+            },
           ),
-          const SizedBox(height: 10),
-          _buildCheckboxInput(
-            label: "Tunggi smena:",
-            value: _isShiftPriceEnabled1,
-            onChanged: (val) => setState(() => _isShiftPriceEnabled1 = val!),
-          ),
+
           const SizedBox(height: 10),
 
-          // 2. Oldindan to'lov qismi (Checkbox bilan)
+          // 2. Tunggi smena
+          _buildCheckboxInput(
+            label: "Tunggi smena:",
+            isChecked: _isNightShiftEnabled,
+            controller: _nightShiftController,
+            onToggle: (val) {
+              setState(() {
+                _isNightShiftEnabled = val ?? false;
+                if (!_isNightShiftEnabled) _nightShiftController.clear();
+              });
+            },
+          ),
+          const SizedBox(height: 10),
           _buildCheckboxInput(
             label: "Oldindan to'lanadigan summa:",
-            value: _isPrepaymentEnabled,
-            onChanged: (val) => setState(() => _isPrepaymentEnabled = val!),
+            isChecked: _isPrepaymentEnabled,
+            controller: _prepaymentController,
+            onToggle: (val) {
+              setState(() {
+                _isPrepaymentEnabled = val ?? false;
+                if (!_isPrepaymentEnabled) _prepaymentController.clear();
+              });
+            },
           ),
           const SizedBox(height: 25),
 
           // 3. To'lov turlari
-          const Text("To'lov turi:", style: TextStyle(color: Colors.white54, fontSize: 13)),
+          const Text("To'lov turi:",
+              style: TextStyle(color: Colors.white54, fontSize: 13)),
           const SizedBox(height: 10),
           _buildPaymentMethods(),
           const SizedBox(height: 25),
 
           // 4. Rasmlar yuklash qismi
-          const Text("Hujjatlar / Rasmlar:", style: TextStyle(color: Colors.white54, fontSize: 13)),
+          const Text("Hujjatlar / Rasmlar:",
+              style: TextStyle(color: Colors.white54, fontSize: 13)),
           const SizedBox(height: 10),
           _buildImageUploadSection(),
           const SizedBox(height: 25),
@@ -80,56 +116,99 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
           // 5. Jami ma'lumotlar
           _buildSummaryInfo(),
           const SizedBox(height: 30),
-
-          // 6. Ijaraga chiqarish tugmasi
           _buildMainButton(),
         ],
       ),
     );
   }
-
-  // --- QURILMA QISMLARI ---
-
   Widget _buildHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      child: Text(title,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
-
-  // Checkbox + Input kombinatsiyasi
-  Widget _buildCheckboxInput({required String label, required bool value, required Function(bool?) onChanged}) {
-    return Container(
-      padding: const EdgeInsets.all(12),
+  Widget _buildCheckboxInput({
+    required String label,
+    required bool isChecked,
+    required TextEditingController controller,
+    required Function(bool?) onToggle,
+    Function(String)? onTextChanged,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: isChecked ? const Color(0xFF40E0D0).withOpacity(0.05) : Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: value ? const Color(0xFF40E0D0).withOpacity(0.4) : Colors.white10),
+        border: Border.all(
+            color: isChecked
+                ? const Color(0xFF40E0D0).withOpacity(0.5)
+                : Colors.white10,
+            width: 1),
       ),
       child: Row(
         children: [
-          Checkbox(
-            activeColor: const Color(0xFF40E0D0),
-            checkColor: Colors.black,
-            value: value,
-            onChanged: onChanged,
+          // Checkbox va Labelni birga bosiladigan qilish
+          Expanded(
+            flex: 3,
+            child: InkWell(
+              onTap: () => onToggle(!isChecked),
+              borderRadius: BorderRadius.circular(10),
+              child: Row(
+                children: [
+                  Checkbox(
+                    activeColor: const Color(0xFF40E0D0),
+                    checkColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    value: isChecked,
+                    onChanged: onToggle,
+                  ),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: isChecked ? Colors.white : Colors.white54,
+                        fontSize: 14,
+                        fontWeight: isChecked ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
+
+          // Input qismi
           Expanded(
             flex: 2,
-            child: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-          ),
-          Expanded(
-            flex: 2,
-            child: TextField(
-              enabled: value,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              decoration: InputDecoration(
-                suffixText: "so'm",
-                suffixStyle: const TextStyle(color: Colors.white38),
-                isDense: true,
-                filled: true,
-                fillColor: value ? Colors.white.withOpacity(0.05) : Colors.black26,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              child: TextField(
+                controller: controller,
+                enabled: isChecked,
+                onChanged: onTextChanged,
+                keyboardType: TextInputType.number,
+                // Faqat raqamlar kiritish uchun
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                decoration: InputDecoration(
+                  suffixText: "so'm",
+                  suffixStyle: const TextStyle(color: Colors.white38, fontSize: 12),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  isDense: true,
+                  filled: true,
+                  fillColor: isChecked ? Colors.white.withOpacity(0.07) : Colors.black26,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Color(0xFF40E0D0), width: 1),
+                  ),
+                ),
               ),
             ),
           ),
@@ -138,7 +217,7 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
     );
   }
 
-  // To'lov turlari (Naqt, Plastik, Terminal)
+
   Widget _buildPaymentMethods() {
     return Row(
       children: [
@@ -159,23 +238,29 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF40E0D0).withOpacity(0.1) : Colors.white.withOpacity(0.03),
+            color: isSelected
+                ? const Color(0xFF40E0D0).withOpacity(0.1)
+                : Colors.white.withOpacity(0.03),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: isSelected ? const Color(0xFF40E0D0) : Colors.white10),
+            border: Border.all(
+                color: isSelected ? const Color(0xFF40E0D0) : Colors.white10),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isSelected ? const Color(0xFF40E0D0) : Colors.white38, size: 20),
+              Icon(icon,
+                  color: isSelected ? const Color(0xFF40E0D0) : Colors.white38,
+                  size: 20),
               const SizedBox(height: 4),
-              Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.white38, fontSize: 12)),
+              Text(label,
+                  style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.white38,
+                      fontSize: 12)),
             ],
           ),
         ),
       ),
     );
   }
-
-  // Rasm yuklash va horizontal list
   Widget _buildImageUploadSection() {
     return SizedBox(
       height: 80,
@@ -192,7 +277,8 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white10, style: BorderStyle.solid),
+                  border: Border.all(
+                      color: Colors.white10, style: BorderStyle.solid),
                 ),
                 child: const Icon(Icons.add_a_photo, color: Color(0xFF40E0D0)),
               ),
@@ -203,7 +289,9 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(image: NetworkImage(_uploadedImages[index - 1]), fit: BoxFit.cover),
+              image: DecorationImage(
+                  image: NetworkImage(_uploadedImages[index - 1]),
+                  fit: BoxFit.cover),
             ),
           );
         },
@@ -211,35 +299,41 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
     );
   }
 
-  // Jami summa va kunlar
   Widget _buildSummaryInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.white.withOpacity(0.05), Colors.transparent]),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Column(
-        children: [
-          _summaryRow("Jami kunlar:", "5 kun"),
-          const Divider(color: Colors.white10, height: 20),
-          _summaryRow("Jami ijara summasi:", "1 160 000 so'm", isTotal: true),
-        ],
-      ),
-    );
+    return Consumer<RentNotifierProvider>(
+        builder: (context, rentProvider, child) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Colors.white.withOpacity(0.05), Colors.transparent]),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          children: [
+            _summaryRow("Jami kunlar:", "${rentProvider.totalDays} kun"),
+            const Divider(color: Colors.white10, height: 20),
+            _summaryRow("Jami ijara summasi:",
+                "${rentProvider.totalPrice} so'm",
+                isTotal: true),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _summaryRow(String label, String value, {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 14)),
-        Text(value, style: TextStyle(
-            color: isTotal ? const Color(0xFFF4A261) : Colors.white,
-            fontSize: isTotal ? 18 : 14,
-            fontWeight: FontWeight.bold
-        )),
+        Text(label,
+            style: const TextStyle(color: Colors.white38, fontSize: 14)),
+        Text(value,
+            style: TextStyle(
+                color: isTotal ? const Color(0xFFF4A261) : Colors.white,
+                fontSize: isTotal ? 18 : 14,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -249,10 +343,14 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF40E0D0), Color(0xFF008B8B)]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF40E0D0), Color(0xFF008B8B)]),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF40E0D0).withOpacity(0.3), blurRadius: 10, spreadRadius: 1)
+          BoxShadow(
+              color: const Color(0xFF40E0D0).withOpacity(0.3),
+              blurRadius: 10,
+              spreadRadius: 1)
         ],
       ),
       child: ElevatedButton(
@@ -261,11 +359,13 @@ class _RentalProcessWidgetState extends State<RentalProcessWidget> {
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
         child: const Text(
           "IJARAGA CHIQARISH",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );
