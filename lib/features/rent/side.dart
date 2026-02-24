@@ -16,11 +16,6 @@ class CalendarSidePanel extends StatelessWidget {
           color: const Color(0xFF1A1A2E).withOpacity(0.9), // To'q binafsha fon
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.white10),
-          // image: const DecorationImage(
-          //   image: NetworkImage('https://your-space-bg-link.com'), // Orqa fondagi yulduzli effekt uchun
-          //   fit: BoxFit.cover,
-          //   opacity: 0.1,
-          // ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

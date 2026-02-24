@@ -54,20 +54,15 @@ class _RentFormPageState extends State<RentPage> {
       // bottomNavigationBar: _buildRentButton(),
     );
   }
-
-  // --- ASOSIY QISM (MIJOZ VA TEXNIKA) ---
   Widget _mainContent() {
     return SingleChildScrollView(
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        // _sectionTitle("Mijozni tanlang"),
         AdvancedCustomerSearch(),
-        //
-        // const SizedBox(height: 10),
-        //
-        //
-        // const SizedBox(height: 30),
-        // _sectionTitle("Texnikalar qidirish"),
-        SpaceDateRangePicker()
+        SpaceDateRangePicker(onConfirm: (DateTime? start, DateTime? end, int totalDays) {
+          print(start);
+          print(end);
+          print(totalDays);
+        },)
       ]),
     );
   }

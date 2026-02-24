@@ -16,7 +16,7 @@ abstract class ApiService extends ChopperService {
   Future<Response<dynamic>> getEquipments(
       {@Query('BrandId') int? brandId,
       @Query('CategoryId') int? categoryId,
-      @Query('Search') String? search,
+      @Query('SearchTerm') String? search,
       @Query('Page') int? page = 1,
       @Query('PageSize') int? pageSize = 20});
 

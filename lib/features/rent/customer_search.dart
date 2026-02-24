@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:admin/features/customers/models/customer_model.dart';
+import 'package:admin/features/rent/provider/rent_notifier_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../customers/provider/customer_notifier.dart';
 
 class Customer {
   final String name, phone, date, takenDate;
@@ -13,16 +20,12 @@ class AdvancedCustomerSearch extends StatefulWidget {
 }
 
 class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
-  final List<Customer> _allCustomers = [
-    Customer("Javohir Qudratov", "90 123 45 67", "24.01.2026", "24.01.2026"),
-    Customer("Sardor Ismoilov", "91 987 65 43", "24.01.2026", ""),
-    Customer("Nodir Akramov", "94 444 22 11", "24.01.2026", ""),
-    Customer("Alisher Valiyev", "93 111 22 33", "25.01.2026", "25.01.2026"),
-  ];
+CustomerModel? selectedCustomer;
   final List<Customer> _selectedCustomers = [];
-
+  Timer? _debounce;
   @override
   Widget build(BuildContext context) {
+    final customerProvider = Provider.of<CustomerNotifierProvider>(context);
     return Container(
       width: 450,
       padding: const EdgeInsets.all(20),
@@ -50,25 +53,32 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
           const Text("Tanlanganlar:", style: TextStyle(color: Colors.white38, fontSize: 13)),
           const SizedBox(height: 10),
 
-          _selectedCustomers.isEmpty
-              ?     RawAutocomplete<Customer>(
+       selectedCustomer==null
+              ?     RawAutocomplete<CustomerModel>(
             optionsBuilder: (TextEditingValue textEditingValue) {
-              if (textEditingValue.text == '') return const Iterable<Customer>.empty();
-              return _allCustomers.where((Customer option) {
-                return option.name.toLowerCase().contains(textEditingValue.text.toLowerCase()) ||
-                    option.phone.contains(textEditingValue.text);
+              if (textEditingValue.text == '') {
+                return const Iterable<CustomerModel>.empty();
+              }
+              if (_debounce?.isActive ?? false) _debounce!.cancel();
+              final completer = Completer<Iterable<CustomerModel>>();
+              _debounce = Timer(const Duration(seconds: 3), () async {
+                try {
+                  await customerProvider.getAllCustomers(search:textEditingValue.text,size: 10,page: 1);
+                  completer.complete(customerProvider.customers);
+                } catch (e) {
+                  completer.complete(const Iterable<CustomerModel>.empty());
+                }
               });
+              return completer.future;
             },
-            displayStringForOption: (Customer option) => option.name,
-
-            // Natijalar oynasi dizayni
+            displayStringForOption: (CustomerModel option) => option.firstName,
             optionsViewBuilder: (context, onSelected, options) {
               return Align(
                 alignment: Alignment.topLeft,
                 child: Material(
                   color: Colors.transparent,
                   child: Container(
-                    width: 410, // Input kengligi bilan bir xil
+                    width: 410,
                     margin: const EdgeInsets.only(top: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1A1F3D),
@@ -81,14 +91,14 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
                       shrinkWrap: true,
                       itemCount: options.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final Customer option = options.elementAt(index);
+                        final CustomerModel option = options.elementAt(index);
                         return ListTile(
                           leading: const CircleAvatar(
                             backgroundColor: Colors.white10,
                             child: Icon(Icons.person, color: Color(0xFFF9A825), size: 20),
                           ),
-                          title: Text(option.name, style: const TextStyle(color: Colors.white)),
-                          subtitle: Text(option.phone, style: const TextStyle(color: Colors.white38)),
+                          title: Text(option.firstName, style: const TextStyle(color: Colors.white)),
+                          subtitle: Text(option.firstName, style: const TextStyle(color: Colors.white38)),
                           onTap: () => onSelected(option),
                         );
                       },
@@ -97,8 +107,6 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
                 ),
               );
             },
-
-            // Qidiruv maydoni dizayni
             fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
               return TextField(
                 controller: controller,
@@ -122,38 +130,28 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
               );
             },
 
-            onSelected: (Customer selection) {
+            onSelected: (CustomerModel selection) {
               setState(() {
-                if (!_selectedCustomers.contains(selection)) {
-                  _selectedCustomers.add(selection);
+                if (selectedCustomer == null) {
+                  selectedCustomer=selection;
                 }
               });
             },
           )
-              : ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _selectedCustomers.length,
-            itemBuilder: (context, index) {
-              return _buildSelectedCard(_selectedCustomers[index], index);
-            },
-          ),
+              : _buildSelectedCard(selectedCustomer!)
+
         ],
       ),
     );
   }
 
-  // Tanlangan mijoz kartasi (Glow effekti bilan)
-  Widget _buildSelectedCard(Customer customer, int index) {
+  Widget _buildSelectedCard(CustomerModel customer) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Ekran kengligiga qarab o'lchamlarni belgilaymiz
         bool isMobile = constraints.maxWidth < 450;
         double horizontalPadding = isMobile ? 12 : 20;
-
         return Column(
           children: [
-            // 1. ASOSIY MA'LUMOTLAR BLOKI
             Container(
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 2),
@@ -205,7 +203,7 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              customer.name,
+                              customer.firstName + " " + customer.lastName,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -215,7 +213,7 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              customer.phone,
+                              customer.address??'',
                               style: const TextStyle(color: Colors.white70, fontSize: 13),
                             ),
                           ],
@@ -225,7 +223,7 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
                       // Yopish tugmasi
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.white24, size: 20),
-                        onPressed: () => setState(() => _selectedCustomers.removeAt(index)),
+                        onPressed: () => selectedCustomer=null,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -301,8 +299,6 @@ class _AdvancedCustomerSearchState extends State<AdvancedCustomerSearch> {
       },
     );
   }
-
-// Responsive yordamchi metod
   Widget _buildInfoLine(String label, String value, {required double leftOffset, Color valueColor = Colors.white}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),

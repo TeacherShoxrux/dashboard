@@ -9,7 +9,7 @@ class NotificationProvider extends ChangeNotifier {
   void show(
       String message, {
         NotificationType type = NotificationType.info,
-        Duration duration = const Duration(seconds: 3),
+        Duration duration = const Duration(seconds: 2),
         bool fromRight = true,
       }) {
     final context = navigatorKey.currentContext;

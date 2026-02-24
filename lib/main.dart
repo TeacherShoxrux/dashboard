@@ -1,10 +1,8 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pretty_chopper_logger/pretty_chopper_logger.dart';
 import 'package:provider/provider.dart';
-
 import 'constants.dart';
 import 'controllers/menu_app_controller.dart';
 import 'core/custom_scroll.dart';
@@ -15,6 +13,7 @@ import 'features/customers/provider/customer_notifier.dart';
 import 'features/customers/provider/file_uploader_notifier.dart';
 import 'features/equipments/data/api_service.dart';
 import 'features/equipments/ui/providers/repository_provider.dart';
+import 'features/rent/provider/rent_notifier_provider.dart';
 import 'network/api_constants.dart';
 import 'network/auth_iterceptor.dart';
 import 'network/result_converter.dart';
@@ -77,6 +76,18 @@ void main() {
           update: (context, api, loader, notify, previous) =>
               previous ??
               CustomerNotifierProvider(
+                  api: api, loader: loader, notify: notify),
+        ),
+        ChangeNotifierProxyProvider3<ApiService, GlobalLoadingProvider,
+            NotificationProvider, RentNotifierProvider>(
+          create: (context) => RentNotifierProvider(
+            api: context.read<ApiService>(),
+            loader: context.read<GlobalLoadingProvider>(),
+            notify: context.read<NotificationProvider>(),
+          ),
+          update: (context, api, loader, notify, previous) =>
+              previous ??
+                  RentNotifierProvider(
                   api: api, loader: loader, notify: notify),
         ),
       ],
